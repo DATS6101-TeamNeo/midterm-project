@@ -55,3 +55,57 @@ We are analyzing how major historical events impacted the S&P 500 index using da
 By looking at prices, returns, correlations, visualizations, and handling outliers, we aim to comprehensively assess how significant historical occurrences influenced the behavior of the S&P 500 index over this 20-year period.
 
 
+
+
+```{r, include=T, results=T}
+df <- data.frame(read.csv('dataset2003-2023.csv'))
+df$Date <- as.Date(df$Date)
+str(df)
+new_df <- subset(df, select = -c(6))
+str(new_df)
+summary(new_df)
+num_variables <- subset(new_df,select = -c(1))
+head(num_variables)
+```
+
+First we change the data type for date column as Date.
+Further we drop adjusted close column as we already had similar column named close and we wanted to work with the raw data.
+
+
+
+```{r, include=T, results=T}
+corr_matrix <- cor(num_variables)
+corrplot(corr_matrix)
+corr_matrix
+```
+The correlation plot shows that we have weak positive correlation of open high low and close variables with Volume variable.
+From the correlation matrix, we can see that the closing price is highly correlated with the high price and low price. This is expected as the all of these prices are related to each other. For example,
+
+- The closing price is correlated to opening price.
+- The highest and lowest prices are correlated to the opening and closing prices.
+
+```{r, include=T, results=T}
+new_df$daily_change <- (new_df$Close / lag(new_df$Close) - 1) * 100
+
+head(new_df)
+```
+The code computes the daily returns for the S&P 500 index. The daily returns are calculated as the percentage change in the closing price from the previous day. We will use these daily returns to analyze the volatility of the index around major events.
+
+```{r, include=T, results=T}
+new_df2 <- na.omit(new_df)
+
+qqnorm(new_df2$daily_change, main = "Q-Q Plot of Daily Returns")
+qqline(new_df2$daily_change, col = "red") # Add reference line
+
+```
+
+From the Q-Q plot, we can see that the daily returns are normally distributed with deviations at the ends which is caused due to outliers. Let's now plot the histogram of the daily returns to further confirm this.
+
+
+```{r, include=T}
+# hist(new_df2$daily_change_standardized, breaks = 50, col = 'green', main = "Histogram daily returns standardized distribution",xlab = "daily returns")
+hist(new_df2$daily_change, breaks = 100, col = 'green', main = "Histogram daily returns distribution",xlab = "daily returns")
+```
+As we observe the bell curve in the histogram, we can confirm that the daily returns are normally distributed.
+
+The significance of this output lies in visualizing the distribution of daily percentage changes in the S&P 500 index. The histogram provides insights into the frequency and magnitude of daily returns, allowing us to assess the volatility, risk, and potential patterns in the stock market. Green color is used for the bars in the histogram, but you can modify the color (col) parameter to any other color if desired.
