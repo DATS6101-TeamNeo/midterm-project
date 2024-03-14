@@ -14,19 +14,44 @@ output:
 ---
 
 ```{r init, include=FALSE}
-# some of common options (and the defaults) are: 
-# include=T, eval=T, echo=T, results='hide'/'asis'/'markup',..., collapse=F, warning=T, message=T, error=T, cache=T, fig.width=6, fig.height=4, fig.dim=c(6,4) #inches, fig.align='left'/'center','right', 
+# Load all required packages
+library(dplyr)
+library(ggplot2)
 library(ezids)
-# knitr::opts_chunk$set(warning = F, results = "markup", message = F)
-knitr::opts_chunk$set(warning = F, results = "hide", message = F)
+library(lubridate)
+library(corrplot)
+knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 options(scientific=T, digits = 3) 
-# options(scipen=9, digits = 3) 
-# ‘scipen’: integer. A penalty to be applied when deciding to print numeric values in fixed or exponential notation.  Positive values bias towards fixed and negative towards scientific notation: fixed notation will be preferred unless it is more than ‘scipen’ digits wider.
-# use scipen=999 to prevent scientific notation at all times
 ```
+
+
 
 # Team Neo Midterm Project
 
-## Effect of Covid 19 and Russia-Ukraine War on S&P500 Index
+Terminology in Trading
+
++ "open" - The opening price for the specified date(s).
++ "close" - The closing price for the specified date(s).
++ "high" - The high price for the specified date(s).
++ "low" - The low price for the specified date(s).
++ "volume" - The volume for the specified date(s).
++ "change" - The price change since the previous trading weekly close.
+             (For monthly take previous trading month’s close and for daily take previous
+             trading day’s close.)
+
+
+We are analyzing how major historical events impacted the S&P 500 index using daily data in last 20 years, that is from 2003-2023. Specifically, we will:
+
+1. Examine the daily closing prices of the index to see how events affected the price levels.
+
+2. Calculate and analyze the daily returns and standardized daily returns to understand volatility around events. 
+
+3. Study the correlation between different variables in the dataset to identify relationships.
+
+4. Plot the daily returns, standardized returns, and closing prices around major events to visualize the impacts.
+
+5. Remove outliers from the data and re-analyze to ensure robustness of our findings.
+
+By looking at prices, returns, correlations, visualizations, and handling outliers, we aim to comprehensively assess how significant historical occurrences influenced the behavior of the S&P 500 index over this 20-year period.
 
 
