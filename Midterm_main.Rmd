@@ -178,6 +178,14 @@ The above code calculates the daily returns for the S&P 500 index during the Gre
 The COVID-19 Virus end date used is the one officially declared by the [cdc.gov](https://www.cdc.gov/coronavirus/2019-ncov/your-health/end-of-phe.html)
 
 ```{r, include=TRUE, results=T}
+sd(great_recession_data$daily_change, na.rm=TRUE)
+sd(covid_data$daily_change, na.rm=TRUE)
+sd(russia_ukraine_data$daily_change, na.rm = TRUE)
+```
+Here we calculate the standard deviation of daily returns for each event to measure the volatility of the S&P 500 index around these events. The standard deviation provides a measure of the dispersion or variability of the daily returns, allowing us to assess the risk and potential impact of these events on the stock market. As we see in the above graphs and the standard deviation values, the volatility of the S&P 500 index was highest during the Great Recession, followed by the COVID-19 pandemic and the Russia-Ukraine invasion.
+
+
+```{r, include=TRUE, results=T}
 # Subset the data for the specified periods
 pre_recession <- new_df2 %>%
   filter(Date >= as.Date("2003-01-01") & Date <= (great_recession_start - days(1)))
@@ -260,7 +268,7 @@ ggplot() +
   scale_x_discrete(limits = unique(c(pre_pandemic_yearly_returns$Year, covid_pandemic_yearly_returns$Year, post_pandemic_yearly_returns$Year))) +
   theme_minimal()
 ```
-
+Considering the lockdown end date as a starting point for the pre-Russia-Ukraine invasion period.
 
 Furthermore we calculate the yearly returns for the S&P 500 index before, during, and after the COVID-19 pandemic. The yearly returns are calculated as the percentage change in the closing price from the beginning to the end of each year. We then compare the mean yearly returns for each period and visualize the yearly returns using bar plots(similar to the above plot) to understand the performance of the index around the COVID-19 pandemic.
 
@@ -287,7 +295,10 @@ ggplot(new_df2, aes(x = Date, y = Close)) +
   theme_minimal()
 ```
 
- 
+The above code creates a line plot of the S&P 500 index closing prices and shades the regions corresponding to the periods before and during the Great Recession. This visualization allows us to compare the index's performance before and after the start of the Great Recession, providing insights into the impact of the event on the stock market. we observe that the index experienced a significant decline during the Great Recession, followed by a recovery period. the few reasons for the decline could be the housing market crash, the financial crisis, and the subsequent economic downturn.
+
+
+
 ```{r, include=TRUE, results=T}
 # Calculating the recovery period for the Great Recession
 
@@ -296,10 +307,50 @@ gr_lowest_point_date <- great_recession_data$Date[great_recession_data$Close == 
 gr_initial_level <- new_df2$Close[new_df2$Date == great_recession_start]
 gr_recovery_date <- min(new_df2$Date[new_df2$Close >= gr_initial_level & new_df2$Date > great_recession_start])
 
+
 gr_recovery_duration <- gr_recovery_date - gr_lowest_point_date
 
 print(gr_recovery_duration)
+
 ```
+The recovery period for the S&P500 Index from it's lowest during the Great Recession to the point where it reached the initial level was 1403 days.
+
+we calculated the recovery period for the S&P 500 index from its lowest point during the Great Recession to the point where it reached the initial level. The recovery period is defined as the number of days it took for the index to recover from the lowest point to the initial level. This provides insights into the duration and speed of recovery following a significant decline in the stock market.
+
+
+```{r, include=TRUE, results=T}
+# Calculating the recovery period for the Great Recession
+
+covid_lowest_point <- min(covid_data$Close)
+covid_lowest_point_date <- covid_data$Date[covid_data$Close == covid_lowest_point]
+covid_initial_level <- new_df2$Close[new_df2$Date == covid_start]
+covid_recovery_date <- min(new_df2$Date[new_df2$Close >= covid_initial_level & new_df2$Date > covid_lowest_point_date])
+
+covid_recovery_duration <- covid_recovery_date - covid_lowest_point_date
+
+print(covid_recovery_duration)
+
+```
+The recovery period for the SandP500 Index from it's lowest during COVID-19 pandemic to the point where it reached the initial level was 119 days.
+
+We calculated the recovery period for the S&P 500 index from its lowest point during the COVID-19 pandemic to the point where it reached the recovery level. Similarly the recovery period is defined in days it took for the index to recover from the lowest point to the initial level. This provides insights into the duration and speed of recovery following a significant decline in the stock market. however the calculated recovery period shows that the stock market recovery from covid happenned much faster than the great recession. we will see this in the graph
+
+```{r, include=TRUE, results=T}
+# Calculating the recovery period for the Great Recession
+
+ruw_lowest_point <- min(russia_ukraine_data$Close)
+ruw_lowest_point_date <- russia_ukraine_data$Date[russia_ukraine_data$Close == ruw_lowest_point]
+ruw_initial_level <- new_df2$Close[new_df2$Date == russia_ukraine_start]
+ruw_recovery_date <- min(new_df2$Date[new_df2$Close >= ruw_initial_level & new_df2$Date > ruw_lowest_point_date])
+
+ruw_recovery_duration <- ruw_recovery_date - ruw_lowest_point_date
+
+print(ruw_recovery_duration)
+
+```
+The recovery period for the SandP500 Index from it's lowest during COVID-19 pandemic to the point where it reached the initial level was 239 days.
+
+The Russia Ukraine invasion recovery period was calculated in the same way as the above two events. The recovery period is defined as the number of days it took for the index to recover from the lowest point to the initial level. The calculated recovery period shows that the stock market recovery from Russia Ukraine invasion was faster than the great recession but slower than the covid-19 pandemic. However since the War is still ongoing, the recovery period might change in the future.
 
 
 ```{r, include=TRUE, results=T}
@@ -327,7 +378,11 @@ ggplot(new_df2, aes(x = Date, y = Close)) +
   theme_minimal()
 ```
 
+The above code creates a line plot of the S&P 500 index closing prices corresponding to the periods before and during the COVID-19 pandemic. This visualization allows us to compare the index's performance before and after the start of the COVID-19 pandemic, providing insights into the impact of the event on the stock market. we observe that the index experienced a significant decline during the COVID-19 pandemic, followed by a recovery period. the few reasons for the decline could be the lockdowns, travel restrictions, and the subsequent economic downturn.
 
+However the covid pandemic did not have a long lasting effect on the stock market as the recovery period was much faster than the great recession unlike expectations.the main reason was the federal government's intervention in the economy and the stock market. low interest rates(close to 0) and the stimulus packages helped the stock market recover faster than expected.
+ - Please refer the below link for more information on the stock market recovery from covid-19 pandemic
+    - reference: https://www.wsj.com/articles/the-s-p-500-sets-first-record-since-february-erasing-its-coronavirus-plunge-11597781130 
 
 ```{r, include=TRUE, results=T}
 # Calculating the recovery period for the COVID-19 Pandemic
@@ -390,3 +445,43 @@ ruw_recovery_duration <- ruw_recovery_date - ruw_lowest_point_date
 
 print(ruw_recovery_duration)
 ```
+
+## Q2 How is the S&P500 Index affected by the Great Recession?
+
+```{r,include=TRUE, results=T}
+new_after_gr <- subset(new_df2, Date <= '2012-12-31'  & Date >= '2008-01-01')
+new_before_gr <- subset(new_df2, Date <= '2007-12-31'  & Date >= '2003-01-01')
+
+t_test_GR = t.test(new_before_gr$Close,new_after_gr$Close)
+
+t_test_GR
+```
+The above code calculates the two sample t-test for the S&P 500 index closing prices before and after the Great Recession. The t-test is used to compare the means of two groups and determine if there is a statistically significant difference between them. In this case, we are comparing the mean closing prices before and after the Great Recession to assess the impact of the event on the stock market. The t-test results provide insights into the significance of the difference in mean closing prices and help us understand the impact of the Great Recession on the stock market.
+
+We can conclude that there is strong evidence to reject the null hypothesis as the p values is less than the level of significance 0.05. The test indicates a statistically significant difference in the means of the S&P 500 index closing values before and after the specified periods. The results are as expected that is before GR the mean was higher compared to the mean after GR and the main reason behind it is the number of days market took for recovery that is 1403 days.
+
+In simpler terms, the analysis suggests that there was a statistically significant change in the average closing values of the S&P 500 index before and after the specified time periods, with the mean values differing by a notable amount.
+
+## Q3 How is the S&P500 Index affected by the COVID-19 pandemic?
+
+
+```{r, include=TRUE,results=T}
+new_before_covid <- subset(new_df2, Date <= '2019-12-31'  & Date >= '2016-06-01')
+new_after_covid <- subset(new_df2, Date < '2023-05-11'  & Date >= '2020-01-01')
+
+t_test_covid = t.test(new_before_covid$Close,new_after_covid$Close, na.rm= TRUE)
+t_test_covid
+```
+Based on these results, we can conclude that there is extremely strong evidence to reject the null hypothesis. The test indicates an extremely significant difference in the means of the S&P 500 index closing values before and after the COVID-19 pandemic. The mean of before covid and after covid is not as expected is because the effect of covid was reduced and recovered within just 119 days which is very less compared to GR as the government got involved and helped the stock market recover faster than expected.
+
+
+## Q4 How is the S&P500 Index affected by the Russia-Ukraine Invasion?
+
+```{r, include=TRUE, results=T}
+new_before_RUW <- subset(new_df2,Date <= '2022-02-23'  & Date >= '2020-01-01' )
+new_after_RUW <- subset(new_df2,Date <= '2023-12-31'  & Date >= '2022-02-24' )
+
+t_test_RUW = t.test(new_before_RUW$Close ,new_after_RUW$Close)
+t_test_RUW
+```
+Based on these results since the p-value is very less than level of significance 0.05 we reject the null hypothesis and thus we conclude that there is a significant difference between both the means. The output is not as expected because even the after the invasion started market recovered within less than a year thus the mean after is greater than the mean before.
