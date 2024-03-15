@@ -176,3 +176,48 @@ russia_ukraine_summary <- compute_summary(russia_ukraine_data)
 The above code calculates the daily returns for the S&P 500 index during the Great Recession, COVID-19 pandemic, and Russia-Ukraine invasion. The daily returns are calculated as the percentage change in the closing price from the previous day. We then visualize the daily returns for each event using line plots(time period is different for each of these events, so we drew separate graphs) and compute summary statistics to understand the volatility of the index around these events.
 
 The COVID-19 Virus end date used is the one officially declared by the [cdc.gov](https://www.cdc.gov/coronavirus/2019-ncov/your-health/end-of-phe.html)
+
+```{r, include=TRUE, results=T}
+# Subset the data for the specified periods
+pre_recession <- new_df2 %>%
+  filter(Date >= as.Date("2003-01-01") & Date <= (great_recession_start - days(1)))
+
+during_recession <- new_df2 %>%
+  filter(Date >= great_recession_start & Date <= great_recession_end)
+
+post_recession <- new_df2 %>%
+  filter(Date >= (great_recession_end + days(1)) & Date <= as.Date("2019-12-31"))
+
+# Define a function to calculate yearly returns
+calculate_yearly_returns <- function(data) {
+  data %>%
+    mutate(Year = format(Date, "%Y")) %>%
+    group_by(Year) %>%
+    summarize(start_price = first(Close),
+              end_price = last(Close),
+              yearly_return = (end_price - start_price) / start_price * 100)
+}
+
+# Apply the function to each period data
+pre_recession_yearly_returns <- calculate_yearly_returns(pre_recession)
+during_recession_yearly_returns <- calculate_yearly_returns(during_recession)
+post_recession_yearly_returns <- calculate_yearly_returns(post_recession)
+
+# Compare summary statistics (e.g., mean yearly returns)
+mean(pre_recession_yearly_returns$yearly_return)
+mean(during_recession_yearly_returns$yearly_return)
+mean(post_recession_yearly_returns$yearly_return)
+
+# Visualize yearly returns
+ggplot() +
+  geom_bar(data = pre_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "steelblue") +
+  geom_bar(data = during_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "firebrick") +
+  geom_bar(data = post_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "forestgreen") +
+  xlab("Year") +
+  ylab("Yearly Return (%)") +
+  ggtitle("S&P 500 Yearly Returns") +
+  scale_x_discrete(limits = unique(c(pre_recession_yearly_returns$Year, during_recession_yearly_returns$Year, post_recession_yearly_returns$Year))) +
+  theme_minimal()
+```
+The code calculates the yearly returns for the S&P 500 index before, during, and after the Great Recession. The yearly returns are calculated as the percentage change in the closing price from the beginning to the end of each year. We then compare the mean yearly returns for each period and visualize the yearly returns using bar plots to understand the performance of the index around the Great Recession.
+
