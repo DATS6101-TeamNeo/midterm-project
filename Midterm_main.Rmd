@@ -109,3 +109,70 @@ hist(new_df2$daily_change, breaks = 100, col = 'green', main = "Histogram daily 
 As we observe the bell curve in the histogram, we can confirm that the daily returns are normally distributed.
 
 The significance of this output lies in visualizing the distribution of daily percentage changes in the S&P 500 index. The histogram provides insights into the frequency and magnitude of daily returns, allowing us to assess the volatility, risk, and potential patterns in the stock market. Green color is used for the bars in the histogram, but you can modify the color (col) parameter to any other color if desired.
+
+```{r, include=T}
+plot(new_df2$Date, new_df2$Close, type = "l", col = "blue", xlab = "Date", ylab = "Close", main = "Close of S&P500 Index")
+```
+
+The graph visually represent the historical trend of the S&P 500 index closing values over time. By plotting the data as a line graph, I can observe the overall direction of the index (whether it's trending upwards, downwards, or relatively stable) and identify periods of significant movement or volatility.
+
+```{r, include=TRUE, results=T}
+
+# Define the event windows
+great_recession_start <- as.Date("2007-12-31")
+great_recession_end <- as.Date("2009-06-30")
+
+covid_start <- as.Date("2020-02-03")
+lockdown_end <- as.Date("2020-08-31")
+covid_end <- as.Date("2023-05-11")
+
+russia_ukraine_start <- as.Date("2022-02-24")
+russia_ukraine_end <- Sys.Date()  # Current date
+
+# Subset the data for each event window
+great_recession_data <- new_df2 %>%
+  filter(Date >= great_recession_start & Date <= great_recession_end)
+
+covid_data <- new_df %>%
+  filter(Date >= covid_start & Date <= covid_end)
+
+russia_ukraine_data <- new_df2 %>%
+  filter(Date >= russia_ukraine_start & Date <= russia_ukraine_end)
+
+# Visualize daily returns for each event
+ggplot(great_recession_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during Great Recession")
+
+ggplot(covid_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during COVID-19 Pandemic")
+
+ggplot(russia_ukraine_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during Russia-Ukraine Invasion")
+
+# Defining a function to compute summary statistics
+compute_summary <- function(data) {
+  data %>%
+    summarize(mean_return = mean(daily_change, na.rm = TRUE),
+              median_return = median(daily_change, na.rm = TRUE),
+              max_return = max(daily_change, na.rm = TRUE),
+              min_return = min(daily_change, na.rm = TRUE))
+}
+
+# Apply the function to each event data
+great_recession_summary <- compute_summary(great_recession_data)
+covid_summary <- compute_summary(covid_data)
+russia_ukraine_summary <- compute_summary(russia_ukraine_data)
+
+```
+The above code calculates the daily returns for the S&P 500 index during the Great Recession, COVID-19 pandemic, and Russia-Ukraine invasion. The daily returns are calculated as the percentage change in the closing price from the previous day. We then visualize the daily returns for each event using line plots(time period is different for each of these events, so we drew separate graphs) and compute summary statistics to understand the volatility of the index around these events.
+
+The COVID-19 Virus end date used is the one officially declared by the [cdc.gov](https://www.cdc.gov/coronavirus/2019-ncov/your-health/end-of-phe.html)
