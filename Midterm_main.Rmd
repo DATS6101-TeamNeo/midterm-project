@@ -14,7 +14,7 @@ output:
 ---
 
 ```{r init, include=FALSE}
-# Load all required packages
+# Load all required packagess
 library(dplyr)
 library(ggplot2)
 library(ezids)
