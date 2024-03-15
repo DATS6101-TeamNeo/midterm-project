@@ -221,3 +221,46 @@ ggplot() +
 ```
 The code calculates the yearly returns for the S&P 500 index before, during, and after the Great Recession. The yearly returns are calculated as the percentage change in the closing price from the beginning to the end of each year. We then compare the mean yearly returns for each period and visualize the yearly returns using bar plots to understand the performance of the index around the Great Recession.
 
+
+
+
+```{r, include=TRUE, results=T}
+# Link used for considering the virus progression end date: https://www.defense.gov/Spotlights/Coronavirus-DOD-Response/Timeline/
+# Subset the data for the specified periods
+pre_pandemic <- new_df2 %>%
+  filter(Date >= as.Date("2009-07-01") & Date <= as.Date("2019-12-31"))
+
+#covid_pandemic <- new_df2 %>%
+ # filter(Date >= as.Date("2020-01-01") & Date <= as.Date("2022-05-31"))
+
+covid_pandemic <- covid_data
+
+post_pandemic <- new_df2 %>%
+  filter(Date >= covid_end & Date <= Sys.Date())
+
+# Apply the function to each period data
+pre_pandemic_yearly_returns <- calculate_yearly_returns(pre_pandemic)
+covid_pandemic_yearly_returns <- calculate_yearly_returns(covid_pandemic)
+post_pandemic_yearly_returns <- calculate_yearly_returns(post_pandemic)
+
+
+# Compare summary statistics (e.g., mean yearly returns)
+mean(post_pandemic_yearly_returns$yearly_return)
+mean(covid_pandemic_yearly_returns$yearly_return)
+mean(post_pandemic_yearly_returns$yearly_return)
+
+# Visualize yearly returns
+ggplot() +
+  geom_bar(data = pre_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "steelblue") +
+  geom_bar(data = covid_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "firebrick") +
+  geom_bar(data = post_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "forestgreen") +
+  xlab("Year") +
+  ylab("Yearly Return (%)") +
+  ggtitle("S&P 500 Yearly Returns") +
+  scale_x_discrete(limits = unique(c(pre_pandemic_yearly_returns$Year, covid_pandemic_yearly_returns$Year, post_pandemic_yearly_returns$Year))) +
+  theme_minimal()
+```
+
+
+Furthermore we calculate the yearly returns for the S&P 500 index before, during, and after the COVID-19 pandemic. The yearly returns are calculated as the percentage change in the closing price from the beginning to the end of each year. We then compare the mean yearly returns for each period and visualize the yearly returns using bar plots(similar to the above plot) to understand the performance of the index around the COVID-19 pandemic.
+
