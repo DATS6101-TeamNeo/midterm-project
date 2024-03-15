@@ -287,9 +287,7 @@ ggplot(new_df2, aes(x = Date, y = Close)) +
   theme_minimal()
 ```
 
- - We observe that the index experienced a significant decline during the Great Recession, followed by a recovery period. 
- - The few reasons for the decline could be the housing market crash, the financial crisis, and the subsequent economic downturn.
-  
+ 
 ```{r, include=TRUE, results=T}
 # Calculating the recovery period for the Great Recession
 
@@ -303,9 +301,7 @@ gr_recovery_duration <- gr_recovery_date - gr_lowest_point_date
 print(gr_recovery_duration)
 ```
 
- - We calculated the recovery period for the S&P 500 index from its lowest point during the Great Recession to the point where it reached the initial level.
- - This provides insights into the duration and speed of recovery following a significant decline in the stock market.
-  
+
 ```{r, include=TRUE, results=T}
 # Define event periods
 before_covid <- new_df2 %>%
@@ -331,14 +327,7 @@ ggplot(new_df2, aes(x = Date, y = Close)) +
   theme_minimal()
 ```
 
-This visualization allows us to compare the index's performance before and after the start of the COVID-19 pandemic, providing insights into the impact of the event on the stock market. 
- - We observe that the index experienced a significant decline during the COVID-19 pandemic, followed by a recovery period. 
- - The reasons for this decline could be the lockdowns, travel restrictions, and the subsequent economic downturn.
- - However, the covid pandemic did not have a long lasting effect on the stock market as the recovery period was much faster than the great recession unlike expectations. 
- - The main reason was the federal government's intervention in the economy and the stock market. low interest rates(close to 0) and the stimulus packages helped the stock market recover faster than expected.
 
-Please refer the below link for more information on the stock market recovery from covid-19 pandemic
-_reference_: https://www.wsj.com/articles/the-s-p-500-sets-first-record-since-february-erasing-its-coronavirus-plunge-11597781130
 
 ```{r, include=TRUE, results=T}
 # Calculating the recovery period for the COVID-19 Pandemic
@@ -354,8 +343,7 @@ print(covid_recovery_duration)
 
 ```
 
- - This provides insights into the duration and speed of recovery following a significant decline in the stock market.
- - However, the calculated recovery period shows that the stock market recovery from covid happenned much faster than the great recession.
+
 
 ```{r, include=TRUE, results=T}
 # Calculating the recovery period for the COVID-19 Pandemic
@@ -371,9 +359,8 @@ print(covid_recovery_duration)
 
 ```
 
- - This provides insights into the duration and speed of recovery following a significant decline in the stock market.
- - However, the calculated recovery period shows that the stock market recovery from covid happenned much faster than the great recession.
-
+ 
+ 
 ```{r, include=TRUE, results=T}
 # Create a line plot with shaded regions
 ggplot(new_df2, aes(x = Date, y = Close)) +
@@ -403,5 +390,3 @@ ruw_recovery_duration <- ruw_recovery_date - ruw_lowest_point_date
 
 print(ruw_recovery_duration)
 ```
- - The calculated recovery period shows that the stock market recovery from Russia Ukraine invasion was faster than the great recession but slower than the covid-19 pandemic. 
- - However, the invasion conflict is still ongoing the overall growth and post-recovery performance may vary.
