@@ -1,13 +1,14 @@
 ---
-title: "Midterm_project_team_neo"
+title: "Effect of Major Historical Events on S&P500 Index"
 date: "`r Sys.Date()`"
-html_document:
+output:
+  html_document:
     code_folding: hide
     number_sections: false
     toc: yes
     toc_depth: 3
     toc_float: yes
-pdf_document:
+  pdf_document:
     toc: yes
     toc_depth: '3'
 ---
