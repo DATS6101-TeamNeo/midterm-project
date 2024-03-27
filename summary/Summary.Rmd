@@ -8,8 +8,8 @@ output:
     toc: yes
 ---
 
-## 2. Introduction
-<span style="font-size: 12px;  text-align: justify;">
+## 1. Introduction
+<span style="font-size: 14px;  text-align: justify;">
 <p>
 The S&P 500 is a stock market index that measures the performance of 500 large-cap U.S. companies listed on stock exchanges. An index in finance refers to a statistical measure of change in a securities market. It typically represents a portfolio of securities that represent a particular market or sector. Stock market indices are used to track the performance of a specific group of stocks.overall, The index is market-capitalization -weighted, meaning that larger companies have a greater impact on its value. Now, coming to the S&P 500, it includes companies from diverse industries such as technology, healthcare, financial services, consumer discretionary and industries. The S&P 500 is widely regarded as one of the best benchmarks for the performance of the U.S. stock market.
 </P>
@@ -19,13 +19,70 @@ The S&P 500 is a stock market index that measures the performance of 500 large-c
 </P>
 </span>
 
+## 2. Dataset 
+<span style="font-size: 14px;  text-align: justify;">
+<p>Our dataset is available as [S&P 500 (^GSPC)](https://finance.yahoo.com/quote/%5EGSPC/history/?guccounter=1) on Yahoo Finance website. All the data is sourced from Yahoo Finance website and covers data from 2003-2023. The dataset consists of 5285 data points (records) and 6 features(columns). Also, there are no null values in the dataset.
+<P>
+<p>Features’ description is given below;
+</span>
+
+
+<div class="column-definitions">
+  <p><strong>1. Open:</strong> Opening price of the S&P 500 index on a given date.</p>
+  <p><strong>2. Close:</strong> Closing price of the S&P 500 index on a given date.</p>
+  <p><strong>3. High:</strong> The highest price
+  attained by S&P 500 index on a given date.</p>
+  <p><strong>4. Low:</strong> The lowest price observed for the S&P 500 index on a given date.</p>
+  <p><strong>5. Volume:</strong> The total number of shares of all S&P 500 index components traded on a given date.</p>
+  <p><strong>6. Daily Change:</strong> The difference in price between the current day's closing price and the previous day's closing price.</p>
+</div>
+
+<style>
+  .column-definitions {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f7f7f7;
+  }
+</style>
 
 
 
+## SMART QUESTION : 1 How is the S&P500 Index affected by the Great Recession?
+
+<P>**Explination:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing the S&P500 Index's performance during the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
+<P>
 
 
-## Smart Question 2   : How is the S&P500 Index affected by the COVID-19 pandemic?
-<span style="font-size: 12px;  text-align: justify;">
+<p>**Null Hypothesis **: There is no significant difference between the S&P 500 Index before and after the Great Recession.
+<p>**Alternate Hypothesis **: There is a significant difference between the S&P 500 Index before and after the Great Recession.
+
+```{r, include=TRUE, echo=FALSE, results=TRUE}
+df <- data.frame(read.csv('../dataset2003-2023.csv'))
+df$Date <- as.Date(df$Date)
+new_df <- subset(df, select = -c(6))
+num_variables <- subset(new_df,select = -c(1))
+new_df$daily_change <- (new_df$Close / lag(new_df$Close) - 1) * 100
+new_df2 <- na.omit(new_df)
+
+new_after_gr <- subset(new_df2, Date <= '2012-12-31'  & Date >= '2008-01-01')
+new_before_gr <- subset(new_df2, Date <= '2007-12-31'  & Date >= '2003-01-01')
+
+t_test_GR = t.test(new_before_gr$Close,new_after_gr$Close)
+
+t_test_GR
+```
+
+<p>**Observation: **
+
+<p> We can conclude that there is strong evidence to reject the null hypothesis as the p values is less than the level of significance 0.05. The test indicates a statistically significant difference in the means of the S&P 500 index closing values before and after the specified periods. The results are as expected that is before GR the mean was higher compared to the mean after GR and the main reason behind it is the number of days market took for recovery that is 1403 days.The results (P-value and Means of groups) of the t-test provide statistical evidence to support this conclusion.
+
+
+</span>
+
+
+## SMART QUESTION 2   : How is the S&P500 Index affected by the COVID-19 pandemic?
+<span style="font-size: 14px;  text-align: justify;">
 <p> Covid-19 has several negative and positive effects on the Society and S&P500 as a whole</p>
 
 <p><strong> Positive Effects:</strong></p>
@@ -48,13 +105,6 @@ The COVID-19 outbreak acted as a catalyst, rapidly advancing the shift towards d
 <p>------------------------------------------------------------------------------------------------------------</p>
 <p><b>Welch Two Sample t-test</b></p>
 ```{r, include=T,echo=FALSE, results=T}
-df <- data.frame(read.csv('../dataset2003-2023.csv'))
-df$Date <- as.Date(df$Date)
-new_df <- subset(df, select = -c(6))
-num_variables <- subset(new_df,select = -c(1))
-new_df$daily_change <- (new_df$Close / lag(new_df$Close) - 1) * 100
-new_df2 <- na.omit(new_df)
-
 new_before_covid <- subset(new_df2, Date <= '2019-12-31'  & Date >= '2016-06-01')
 new_after_covid <- subset(new_df2, Date < '2023-05-11'  & Date >= '2020-01-01')
 
