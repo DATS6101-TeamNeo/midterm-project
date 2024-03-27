@@ -283,6 +283,9 @@ Gaddam, Phanindra Kumar Kalaga, Prudhvi chekuri</h4>
 <div id="TOC" class="toc">
 <div class="toc-box">
 <ul>
+<li><a href="#introduction" id="toc-introduction">1.
+Introduction</a></li>
+<li><a href="#dataset" id="toc-dataset">2. Dataset</a></li>
 <li><a href="#eda-volatility-analysis-during-major-historical-events" id="toc-eda-volatility-analysis-during-major-historical-events">EDA:
 Volatility analysis during Major Historical Events</a>
 <ul>
@@ -297,11 +300,100 @@ Statistics</a></li>
 <li><a href="#eda-stats-comparing-standard-deviations" id="toc-eda-stats-comparing-standard-deviations">EDA: Stats: Comparing
 Standard Deviations</a></li>
 </ul></li>
+<li><a href="#smart-question-1-how-is-the-sp500-index-affected-by-the-great-recession" id="toc-smart-question-1-how-is-the-sp500-index-affected-by-the-great-recession">SMART
+QUESTION : 1 How is the S&amp;P500 Index affected by the Great
+Recession?</a></li>
+<li><a href="#smart-question-2-how-is-the-sp500-index-affected-by-the-covid-19-pandemic" id="toc-smart-question-2-how-is-the-sp500-index-affected-by-the-covid-19-pandemic">SMART
+QUESTION 2 : How is the S&amp;P500 Index affected by the COVID-19
+pandemic?</a></li>
 </ul>
 </div>
 </div>
 
 <section class="main-content">
+<div id="introduction" class="section level2">
+<h2>1. Introduction</h2>
+<span style=" text-align: justify;">
+<p>
+The S&amp;P 500 is a stock market index that measures the performance of
+500 large-cap U.S. companies listed on stock exchanges. An index in
+finance refers to a statistical measure of change in a securities
+market. It typically represents a portfolio of securities that represent
+a particular market or sector. Stock market indices are used to track
+the performance of a specific group of stocks.overall, The index is
+market-capitalization -weighted, meaning that larger companies have a
+greater impact on its value. Now, coming to the S&amp;P 500, it includes
+companies from diverse industries such as technology, healthcare,
+financial services, consumer discretionary and industries. The S&amp;P
+500 is widely regarded as one of the best benchmarks for the performance
+of the U.S. stock market.
+</P>
+<P>
+This project utilizes a dataset from Yahoo finance containing
+information on over 6,000 instances, with the goal of developing
+Explanatory Data Analysis to effectively distinguish Data observations
+for analysis. The dataset includes characteristics such as open, close,
+High, Volume and Low. Through exploratory data analysis, we will
+identify trends and correlations between these features and gather
+insights. Firstly we will see if the dataset needs any changes like pre
+processing then we will continue with analysis using t-test’s.
+</P>
+<P>
+The results produced from this project can provide valuable insights
+into market dynamics, risk management, investment strategies, and
+decision-making, contributing to more informed and successful investing
+over time.
+</P>
+<p></span></p>
+</div>
+<div id="dataset" class="section level2">
+<h2>2. Dataset</h2>
+<span style=" text-align: justify;">
+<p>
+Our dataset is available as <a href="https://finance.yahoo.com/quote/%5EGSPC/history/?guccounter=1">S&amp;P
+500 (^GSPC)</a> on Yahoo Finance website. All the data is sourced from
+Yahoo Finance website and covers data from 2003-2023. The dataset
+consists of 5285 data points (records) and 6 features(columns). Also,
+there are no null values in the dataset.
+<P>
+<p>
+<p>Features’ description is given below; </span></p>
+<div class="column-definitions">
+<p>
+<strong>1. Open:</strong> Opening price of the S&amp;P 500 index on a
+given date.
+</p>
+<p>
+<strong>2. Close:</strong> Closing price of the S&amp;P 500 index on a
+given date.
+</p>
+<p>
+<strong>3. High:</strong> The highest price attained by S&amp;P 500
+index on a given date.
+</p>
+<p>
+<strong>4. Low:</strong> The lowest price observed for the S&amp;P 500
+index on a given date.
+</p>
+<p>
+<strong>5. Volume:</strong> The total number of shares of all S&amp;P
+500 index components traded on a given date.
+</p>
+<p>
+<strong>6. Daily Change:</strong> The difference in price between the
+current day’s closing price and the previous day’s closing price.
+</p>
+</div>
+<style>
+.column-definitions {
+font-family: Arial, sans-serif;
+padding: 20px;
+border: 1px solid #ccc;
+background-color: #f7f7f7;
+}
+</style>
+<p></br></p>
+</div>
 <div id="eda-volatility-analysis-during-major-historical-events" class="section level2">
 <h2>EDA: Volatility analysis during Major Historical Events</h2>
 <div id="eda-graphs-line-plot-of-close-with-shaded-regions" class="section level3">
@@ -602,6 +694,144 @@ Recession, followed by the COVID-19 pandemic and the Russia-Ukraine
 invasion.</li>
 </ul>
 </div>
+</div>
+<div id="smart-question-1-how-is-the-sp500-index-affected-by-the-great-recession" class="section level2">
+<h2>SMART QUESTION : 1 How is the S&amp;P500 Index affected by the Great
+Recession?</h2>
+<P>
+<strong>Explination:</strong> This question aims to explore the
+relationship between the S&amp;P500 Index and the Great Recession, a
+significant economic event. We found that this event had a significant
+affect on S&amp;P 500 index, so we formulated this question to further
+investigate this relationship further. (By analyzing the S&amp;P500
+Index’s performance during the Great Recession, we can gain insights
+into how the index was impacted by this economic downturn.)
+<P>
+<p>
+<strong>Null Hypothesis </strong>: There is no significant difference
+between the S&amp;P 500 Index before and after the Great Recession.
+<p>
+<p><strong>Alternate Hypothesis </strong>: There is a significant
+difference between the S&amp;P 500 Index before and after the Great
+Recession.</p>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  new_before_gr$Close and new_after_gr$Close
+## t = 4, df = 2514, p-value = 1e-04
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  13.3 41.4
+## sample estimates:
+## mean of x mean of y 
+##      1218      1191</code></pre>
+<p>
+<p><strong>Observation: </strong></p>
+<p>
+<p>We can conclude that there is strong evidence to reject the null
+hypothesis as the p values is less than the level of significance 0.05.
+The test indicates a statistically significant difference in the means
+of the S&amp;P 500 index closing values before and after the specified
+periods. The results are as expected that is before GR the mean was
+higher compared to the mean after GR and the main reason behind it is
+the number of days market took for recovery that is 1403 days.The
+results (P-value and Means of groups) of the t-test provide statistical
+evidence to support this conclusion.</p>
+<p></span></p>
+</div>
+<div id="smart-question-2-how-is-the-sp500-index-affected-by-the-covid-19-pandemic" class="section level2">
+<h2>SMART QUESTION 2 : How is the S&amp;P500 Index affected by the
+COVID-19 pandemic?</h2>
+<span style=" text-align: justify;">
+<p>
+Covid-19 has several negative and positive effects on the Society and
+S&amp;P500 as a whole
+</p>
+<p>
+<strong> Positive Effects:</strong>
+</p>
+<p>
+The COVID-19 outbreak acted as a catalyst, rapidly advancing the shift
+towards digitalization and remote operations across many sectors. This
+transition played into the strengths of major technology firms.
+Companies such as Amazon, Microsoft, Apple, and Google experienced a
+surge in the demand for their digital offerings and solutions that
+enabled remote work, online shopping, virtual communication, and digital
+entertainment. As a result of this heightened demand, the stocks of
+these tech giants saw substantial price increases. Given their
+significant weightings in the S&amp;P 500 index, the stock price
+appreciation of these technology behemoths made a positive contribution
+to the overall performance of the benchmark index.
+</p>
+<p>
+To mitigate the economic impacts of the lockdowns imposed due to the
+pandemic, central banks like the Federal Reserve and governments across
+the globe injected substantial amounts of capital and enacted stimulus
+programs. This massive influx of liquidity into the financial system
+helped stabilize and calm the markets during a period of heightened
+volatility and uncertainty. Moreover, these interventions bolstered
+investor sentiment and confidence in the markets’ resilience.
+Consequently, this renewed optimism among investors, fueled by the
+stimulus measures, had a favorable effect on the performance of the
+S&amp;P 500 index. similarly these helped in growth of healthcare growth
+</p>
+<p>
+<strong>Negative Effects:</strong>
+</p>
+<p>
+Firstly, Industries such as travel, hospitality, and retail were
+severely affected by lockdowns and reduced consumer spending. Companies
+in these sectors experienced significant stock price declines, dragging
+down the overall performance of the S&amp;P 500.
+</p>
+<p>
+The pandemic caused extreme volatility in financial markets. Uncertainty
+about the virus’s impact on the economy led to sharp market swings,
+causing fluctuations in the S&amp;P 500 and increasing investor anxiety.
+</p>
+<p>
+<b>Null Hypothesis</b> : There is no significant difference between the
+S&amp;P 500 Index before and after the Covid-19.
+</p>
+<p>
+<b>Alternate Hypothesis</b> : There is a significant difference between
+the S&amp;P 500 Index before and after the Covid-19.
+</p>
+<p>
+————————————————————————————————————
+</p>
+<p>
+<b>Welch Two Sample t-test</b>
+</p>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  new_before_covid$Close and new_after_covid$Close
+## t = -62, df = 1297, p-value &lt;2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -1307 -1227
+## sample estimates:
+## mean of x mean of y 
+##      2614      3880</code></pre>
+<p>
+————————————————————————————————————
+</p>
+<p>
+<b>Observation:</b>
+</p>
+<p>
+By comparing and performing analysis using t-test. we have found that
+the mean of close instance before covid and after covid is not as
+expected. the mean of close is higher after the covid by 1266 compared
+to before covid. Furthermore the p-value is less than 2e-16 which means
+we reject null hypothesis. After reading an article from Wall street
+journal we have come to know that covid effects were reduced and
+recovered within just 119 days which is very less compared to Great
+recession as the government got involved and helped the stock market
+recover faster than expected.
+</p>
+<p></span></p>
 </div>
 </section>
 

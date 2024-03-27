@@ -8,12 +8,6 @@ output:
     toc: yes
 ---
 
-## EDA: Volatility analysis during Major Historical Events
-
-```{r include = FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-```
-
 ```{r init, include=FALSE, echo=FALSE}
 # Load all required packagess
 library(dplyr)
@@ -25,8 +19,9 @@ knitr::opts_chunk$set(warning = F, results = "markup", message = F)
 options(scientific = T, digits = 3)
 ```
 
-
 ```{r, include=TRUE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
 df <- data.frame(read.csv("../dataset2003-2023.csv"))
 
 df$Date <- as.Date(df$Date)
@@ -57,8 +52,52 @@ covid_data <- new_df2 %>%
 
 russia_ukraine_data <- new_df2 %>%
   filter(Date >= russia_ukraine_start & Date <= russia_ukraine_end)
-
 ```
+
+
+
+## 1. Introduction
+<span style=" text-align: justify;">
+<p>
+The S&P 500 is a stock market index that measures the performance of 500 large-cap U.S. companies listed on stock exchanges. An index in finance refers to a statistical measure of change in a securities market. It typically represents a portfolio of securities that represent a particular market or sector. Stock market indices are used to track the performance of a specific group of stocks.overall, The index is market-capitalization -weighted, meaning that larger companies have a greater impact on its value. Now, coming to the S&P 500, it includes companies from diverse industries such as technology, healthcare, financial services, consumer discretionary and industries. The S&P 500 is widely regarded as one of the best benchmarks for the performance of the U.S. stock market.
+</P>
+<P>This project utilizes a dataset from Yahoo finance containing information on over 6,000 instances, with the goal of developing Explanatory Data Analysis to effectively distinguish Data observations for analysis. The dataset includes characteristics such as open, close, High, Volume and Low. Through exploratory data analysis, we will identify trends and correlations between these features and gather insights. Firstly we will see if the dataset needs any changes like pre processing then we will continue with analysis using t-test's. 
+</P>
+<P>The results produced from this project  can provide valuable insights into market dynamics, risk management, investment strategies, and decision-making, contributing to more informed and successful investing over time.
+</P>
+</span>
+
+## 2. Dataset 
+<span style=" text-align: justify;">
+<p>Our dataset is available as [S&P 500 (^GSPC)](https://finance.yahoo.com/quote/%5EGSPC/history/?guccounter=1) on Yahoo Finance website. All the data is sourced from Yahoo Finance website and covers data from 2003-2023. The dataset consists of 5285 data points (records) and 6 features(columns). Also, there are no null values in the dataset.
+<P>
+<p>Features’ description is given below;
+</span>
+
+
+<div class="column-definitions">
+  <p><strong>1. Open:</strong> Opening price of the S&P 500 index on a given date.</p>
+  <p><strong>2. Close:</strong> Closing price of the S&P 500 index on a given date.</p>
+  <p><strong>3. High:</strong> The highest price
+  attained by S&P 500 index on a given date.</p>
+  <p><strong>4. Low:</strong> The lowest price observed for the S&P 500 index on a given date.</p>
+  <p><strong>5. Volume:</strong> The total number of shares of all S&P 500 index components traded on a given date.</p>
+  <p><strong>6. Daily Change:</strong> The difference in price between the current day's closing price and the previous day's closing price.</p>
+</div>
+
+<style>
+  .column-definitions {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f7f7f7;
+  }
+</style>
+
+</br>
+
+## EDA: Volatility analysis during Major Historical Events
+
 
 
 ### EDA: Graphs: Line Plot of Close with Shaded Regions
@@ -173,7 +212,7 @@ However the covid pandemic did not have a long lasting effect on the stock marke
 ```{r, include=TRUE, results='asis'}
 # Calculating the recovery period for the COVID-19 Pandemic
 
-covid_lowest_point <- min(covid_data$Close)
+  covid_lowest_point <- min(covid_data$Close)
 covid_lowest_point_date <- covid_data$Date[covid_data$Close == covid_lowest_point]
 covid_initial_level <- new_df2$Close[new_df2$Date == covid_start]
 covid_recovery_date <- min(new_df2$Date[new_df2$Close >= covid_initial_level & new_df2$Date > covid_lowest_point_date])
@@ -366,3 +405,67 @@ Now we calculate and compare the standard deviation of daily returns for each ev
 
 - As we see in the above graphs and the standard deviation values, the volatility of the S&P 500 index was highest during the Great Recession, followed by the COVID-19 pandemic and the Russia-Ukraine invasion.
 
+## SMART QUESTION : 1 How is the S&P500 Index affected by the Great Recession?
+
+<P>**Explination:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing the S&P500 Index's performance during the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
+<P>
+
+
+<p>**Null Hypothesis **: There is no significant difference between the S&P 500 Index before and after the Great Recession.
+<p>**Alternate Hypothesis **: There is a significant difference between the S&P 500 Index before and after the Great Recession.
+
+```{r, include=TRUE, echo=FALSE, results=TRUE}
+new_after_gr <- subset(new_df2, Date <= '2012-12-31'  & Date >= '2008-01-01')
+new_before_gr <- subset(new_df2, Date <= '2007-12-31'  & Date >= '2003-01-01')
+
+t_test_GR = t.test(new_before_gr$Close,new_after_gr$Close)
+
+t_test_GR
+```
+
+<p>**Observation: **
+
+<p> We can conclude that there is strong evidence to reject the null hypothesis as the p values is less than the level of significance 0.05. The test indicates a statistically significant difference in the means of the S&P 500 index closing values before and after the specified periods. The results are as expected that is before GR the mean was higher compared to the mean after GR and the main reason behind it is the number of days market took for recovery that is 1403 days.The results (P-value and Means of groups) of the t-test provide statistical evidence to support this conclusion.
+
+
+</span>
+
+
+## SMART QUESTION 2   : How is the S&P500 Index affected by the COVID-19 pandemic?
+<span style=" text-align: justify;">
+<p> Covid-19 has several negative and positive effects on the Society and S&P500 as a whole</p>
+
+<p><strong> Positive Effects:</strong></p>
+<p>
+The COVID-19 outbreak acted as a catalyst, rapidly advancing the shift towards digitalization and remote operations across many sectors. This transition played into the strengths of major technology firms. Companies such as Amazon, Microsoft, Apple, and Google experienced a surge in the demand for their digital offerings and solutions that enabled remote work, online shopping, virtual communication, and digital entertainment. As a result of this heightened demand, the stocks of these tech giants saw substantial price increases. Given their significant weightings in the S&P 500 index, the stock price appreciation of these technology behemoths made a positive contribution to the overall performance of the benchmark index.</p>
+
+<p>To mitigate the economic impacts of the lockdowns imposed due to the pandemic, central banks like the Federal Reserve and governments across the globe injected substantial amounts of capital and enacted stimulus programs. This massive influx of liquidity into the financial system helped stabilize and calm the markets during a period of heightened volatility and uncertainty. Moreover, these interventions bolstered investor sentiment and confidence in the markets' resilience. Consequently, this renewed optimism among investors, fueled by the stimulus measures, had a favorable effect on the performance of the S&P 500 index. similarly these helped in growth of healthcare growth</p>
+
+
+<p><strong>Negative Effects:</strong> </p>
+<p>Firstly, Industries such as travel, hospitality, and retail were severely affected by lockdowns and reduced consumer spending. Companies in these sectors experienced significant stock price declines, dragging down the overall performance of the S&P 500.</p>  
+<p>The pandemic caused extreme volatility in financial markets. Uncertainty about the virus's impact on the economy led to sharp market swings, causing fluctuations in the S&P 500 and increasing investor anxiety.</p>
+
+
+<p><b>Null Hypothesis</b> : There is no significant difference between the S&P 500 Index before and after the Covid-19.</p>
+
+<p><b>Alternate Hypothesis</b> : There is a significant difference between the S&P 500 Index before and after the Covid-19.</p>
+
+
+<p>------------------------------------------------------------------------------------------------------------</p>
+<p><b>Welch Two Sample t-test</b></p>
+```{r, include=T,echo=FALSE, results=T}
+new_before_covid <- subset(new_df2, Date <= '2019-12-31'  & Date >= '2016-06-01')
+new_after_covid <- subset(new_df2, Date < '2023-05-11'  & Date >= '2020-01-01')
+
+t_test_covid = t.test(new_before_covid$Close, new_after_covid$Close, na.rm= TRUE)
+t_test_covid
+```
+
+<p>------------------------------------------------------------------------------------------------------------</p>
+
+<p><b>Observation:</b> </p>
+
+<p>By comparing and performing analysis using t-test. we have found that the mean of close instance before covid and after covid is not as expected. the mean of close is higher after the covid by 1266 compared to before covid. Furthermore the p-value is less than 2e-16 which means we reject null hypothesis. After reading an article from Wall street journal we have come to know that covid effects were reduced and recovered within just 119 days which is very less compared to Great recession as the government got involved and helped the stock market recover faster than expected.</p>
+
+</span>
