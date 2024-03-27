@@ -1,0 +1,11 @@
+---
+title: "Summary Paper: Effect of Major Historical Events on S&P500 Index"
+author: "Bharat Khandewal, Dinesh Chandra Gaddam, Phanindra Kalaga, Prudhvi chekuri"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    theme: architect
+    toc: yes
+---
+
+### Initial Commit
