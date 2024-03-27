@@ -4,8 +4,365 @@ author: "Bharat Khandewal, Dinesh Chandra Gaddam, Phanindra Kalaga, Prudhvi chek
 date: "`r Sys.Date()`"
 output: 
   prettydoc::html_pretty:
-    theme: architect
+    theme: cayman
     toc: yes
 ---
 
-### Initial Commit
+## EDA: Volatility analysis during Major Historical Events
+
+```{r include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r init, include=FALSE, echo=FALSE}
+# Load all required packagess
+library(dplyr)
+library(ggplot2)
+library(ezids)
+library(lubridate)
+library(corrplot)
+knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+options(scientific = T, digits = 3)
+```
+
+
+```{r, include=TRUE, echo=FALSE}
+df <- data.frame(read.csv("../dataset2003-2023.csv"))
+
+df$Date <- as.Date(df$Date)
+
+new_df <- subset(df, select = -c(6))
+
+new_df$daily_change <- (new_df$Close / lag(new_df$Close) - 1) * 100
+
+new_df2 <- na.omit(new_df)
+
+# Define the event windows
+great_recession_start <- as.Date("2007-12-31")
+great_recession_end <- as.Date("2009-06-30")
+
+covid_start <- as.Date("2020-02-03")
+lockdown_end <- as.Date("2020-08-31")
+covid_end <- as.Date("2023-05-11")
+
+russia_ukraine_start <- as.Date("2022-02-24")
+russia_ukraine_end <- Sys.Date() # Current date
+
+# Subset the data for the event window
+great_recession_data <- new_df2 %>%
+  filter(Date >= great_recession_start & Date <= great_recession_end)
+
+covid_data <- new_df2 %>%
+  filter(Date >= covid_start & Date <= covid_end)
+
+russia_ukraine_data <- new_df2 %>%
+  filter(Date >= russia_ukraine_start & Date <= russia_ukraine_end)
+
+```
+
+
+### EDA: Graphs: Line Plot of Close with Shaded Regions
+
+Now, we will create a line plot of the S&P 500 index closing prices with shaded regions corresponding to the periods before and after the start of events. This visualization will help us compare the index's performance before and after these events and understand the impact of these historical events on the stock market.
+
+#### During Great Recession
+
+```{r, include=TRUE, results='asis'}
+pre_recession <- new_df2 %>%
+  filter(Date >= as.Date("2003-01-01") & Date <= (great_recession_start - days(1)))
+
+during_recession <- new_df2 %>%
+  filter(Date >= great_recession_start & Date <= great_recession_end)
+
+post_recession <- new_df2 %>%
+  filter(Date >= (great_recession_end + days(1)) & Date <= as.Date("2019-12-31"))
+
+
+# Define event periods
+before_gr <- pre_recession
+
+during_gr <- during_recession
+
+# Line plot with shaded regions
+ggplot(new_df2, aes(x = Date, y = Close)) +
+  geom_line() +
+  geom_rect(
+    data = during_gr,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "red", alpha = 0.002
+  ) +
+  geom_rect(
+    data = before_gr,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "green", alpha = 0.002
+  ) +
+  labs(
+    title = "S&P 500 Index around Great Recession",
+    x = "Date",
+    y = "Closing Price"
+  ) +
+  theme_minimal()
+```
+
+The above code creates a line plot of the S&P 500 index closing prices and shades the regions corresponding to the periods before and during the Great Recession. This visualization allows us to compare the index's performance before and after the start of the Great Recession, providing insights into the impact of the event on the stock market. we observe that the index experienced a significant decline during the Great Recession, followed by a recovery period. the few reasons for the decline could be the housing market crash, the financial crisis, and the subsequent economic downturn.
+
+#### Recovery Period for Great Recession
+
+```{r, include=TRUE, results='asis'}
+# Calculating the recovery period for the Great Recession
+
+gr_lowest_point <- min(great_recession_data$Close)
+gr_lowest_point_date <- great_recession_data$Date[great_recession_data$Close == gr_lowest_point]
+gr_initial_level <- new_df2$Close[new_df2$Date == great_recession_start]
+gr_recovery_date <- min(new_df2$Date[new_df2$Close >= gr_initial_level & new_df2$Date > great_recession_start])
+
+
+gr_recovery_duration <- gr_recovery_date - gr_lowest_point_date
+
+print(gr_recovery_duration)
+```
+
+- The recovery period for the S&P500 Index during the Great Recession is 1403 days (about 4 years).
+- We calculated the recovery period for the S&P 500 index from its lowest point during the Great Recession to the point where it reached the initial level. 
+- This provides insights into the duration and speed of recovery following a significant decline in the stock market.
+
+
+#### During COVID-19 Pandemic
+
+```{r, include=TRUE, results=T}
+# Define event periods
+before_covid <- new_df2 %>%
+  filter(Date >= great_recession_end + days(1) & Date <= covid_start - days(1))
+
+during_covid <- covid_data
+
+after_covid <- new_df2 %>%
+  filter(Date >= as.Date("2022-06-01") & Date <= Sys.Date())
+
+# Line plot with shaded regions
+ggplot(new_df2, aes(x = Date, y = Close)) +
+  geom_line() +
+  geom_rect(
+    data = during_covid,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "red", alpha = 0.002
+  ) +
+  geom_rect(
+    data = before_covid,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "green", alpha = 0.002
+  ) +
+  labs(
+    title = "S&P 500 Index around COVID-19 Pandemic",
+    x = "Date",
+    y = "Closing Price"
+  ) +
+  theme_minimal()
+```
+
+The above code creates a line plot of the S&P 500 index closing prices corresponding to the periods before and during the COVID-19 pandemic. This visualization allows us to compare the index's performance before and after the start of the COVID-19 pandemic, providing insights into the impact of the event on the stock market. we observe that the index experienced a significant decline during the COVID-19 pandemic, followed by a recovery period. the few reasons for the decline could be the lockdowns, travel restrictions, and the subsequent economic downturn.
+
+However the covid pandemic did not have a long lasting effect on the stock market as the recovery period was much faster than the great recession unlike expectations.the main reason was the federal government's intervention in the economy and the stock market. low interest rates(close to 0) and the stimulus packages helped the stock market recover faster than expected.
+ - Please refer the below link for more information on the stock market recovery from covid-19 pandemic
+    - reference: https://www.wsj.com/articles/the-s-p-500-sets-first-record-since-february-erasing-its-coronavirus-plunge-11597781130 
+
+
+#### Recovery Period for COVID-19 Pandemic
+
+
+```{r, include=TRUE, results='asis'}
+# Calculating the recovery period for the COVID-19 Pandemic
+
+covid_lowest_point <- min(covid_data$Close)
+covid_lowest_point_date <- covid_data$Date[covid_data$Close == covid_lowest_point]
+covid_initial_level <- new_df2$Close[new_df2$Date == covid_start]
+covid_recovery_date <- min(new_df2$Date[new_df2$Close >= covid_initial_level & new_df2$Date > covid_lowest_point_date])
+
+covid_recovery_duration <- covid_recovery_date - covid_lowest_point_date
+
+print(covid_recovery_duration)
+```
+
+ 
+- The recovery period for the SandP500 Index from it's lowest during COVID-19 pandemic is 119 days.
+- This provides insights into the duration and speed of recovery following a significant decline in the stock market. 
+- However, the calculated recovery period shows that the stock market recovery from covid happenned much faster than the great recession.
+
+
+#### During Russia Ukraine Invasion
+ 
+```{r, include=TRUE, results=T}
+# Create a line plot with shaded regions
+ggplot(new_df2, aes(x = Date, y = Close)) +
+  geom_line() +
+  geom_rect(
+    data = russia_ukraine_data,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "red", alpha = 0.002
+  ) +
+  geom_rect(
+    data = subset(new_df2, Date >= lockdown_end & Date <= russia_ukraine_start - days(1)),
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "green", alpha = 0.002
+  ) +
+  labs(
+    title = "S&P 500 Index around Russia-Ukraine Conflict",
+    x = "Date",
+    y = "Closing Price"
+  ) +
+  theme_minimal()
+```
+
+#### Recovery Period for Russia Ukraine Invasion
+
+```{r, include=TRUE, results='asis'}
+# Calculating the recovery period for Russia Ukraine Invasion
+
+ruw_lowest_point <- min(russia_ukraine_data$Close)
+ruw_lowest_point_date <- russia_ukraine_data$Date[russia_ukraine_data$Close == ruw_lowest_point]
+ruw_initial_level <- new_df2$Close[new_df2$Date == russia_ukraine_start]
+ruw_recovery_date <- min(new_df2$Date[new_df2$Close >= ruw_initial_level & new_df2$Date > ruw_lowest_point_date])
+
+ruw_recovery_duration <- ruw_recovery_date - ruw_lowest_point_date
+
+print(ruw_recovery_duration)
+```
+
+- The Russia Ukraine invasion recovery period was calculated in the same way as the above two events. 
+- The calculated recovery period which is `r ruw_recovery_duration` shows that the stock market recovery from Russia Ukraine invasion was faster than the great recession but slower than the covid-19 pandemic. 
+- However since the War is still ongoing, the recovery period might change in the future.
+
+
+### EDA: Graphs: Line Plot for daily returns
+
+We are plotting a line graph to show the daily change percentage of the S&P 500 index specifially during the historical events.
+
+  - This graph will help us visualize the overall trend in the index's performance and identify any significant changes or patterns over time. 
+  - The daily change percentage is calculated as the percentage change in the index's closing price from the previous day, providing insights into the daily volatility and market movements.
+  
+(_The COVID-19 Virus end date used is the one officially declared by the [cdc.gov](https://www.cdc.gov/coronavirus/2019-ncov/your-health/end-of-phe.html)_)
+
+```{r, include=TRUE, results='asis'}
+# Visualize daily returns for each event
+ggplot(great_recession_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during Great Recession")
+```
+
+```{r, include=TRUE, results='asis'}
+ggplot(covid_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during COVID-19 Pandemic")
+```
+
+```{r, include=TRUE, results='asis'}
+ggplot(russia_ukraine_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during Russia-Ukraine Invasion")
+```
+
+### EDA: Graphs: Violin Plot for daily returns
+
+Now, we will create a violin plot to compare the distribution of daily returns for each event side-by-side. 
+- This plot will provide a better visual representation of the volatility for comparing the daily returns during the historical events. 
+- The violin plot will help us understand the range and frequency of daily returns during these significant events and compare the level of volatility across different periods.
+
+```{r, include=TRUE, results='asis'}
+# Create a colorful violin plot to compare the distribution of daily returns for each event
+ggplot(new_df2, aes(
+  x = factor(ifelse(Date >= great_recession_start & Date <= great_recession_end, "Great Recession",
+    ifelse(Date >= covid_start & Date <= covid_end, "COVID-19 Pandemic",
+      "Russia-Ukraine Invasion"
+    )
+  )),
+  y = daily_change, fill = factor(ifelse(Date >= great_recession_start & Date <= great_recession_end, "Great Recession",
+    ifelse(Date >= covid_start & Date <= covid_end, "COVID-19 Pandemic",
+      "Russia-Ukraine Invasion"
+    )
+  ))
+)) +
+  geom_violin(alpha = 0.5) + # Set transparency to 0.7 (slightly translucent)
+  scale_fill_manual(values = c(
+    "Great Recession" = "blue",
+    "COVID-19 Pandemic" = "red",
+    "Russia-Ukraine Invasion" = "green"
+  )) +
+  labs(
+    x = "Event", y = "Daily Returns (%)",
+    title = "Distribution of S&P 500 Daily Returns around Major Events",
+    fill = "Event"
+  ) +
+  guides(fill = guide_legend(title = "Event"))
+```
+
+The violin plot provides a visual comparison of the S&P 500 index's daily return volatility during three distinct periods: the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine War. 
+Each violin represents the distribution of daily returns for one of these events, with the width of the plot indicating the frequency of returns at different levels.
+
+- *Great Recession (Blue Violin):* The widest violin plot among the three, indicating the highest volatility in daily returns during this period. The broad distribution suggests that the S&P 500 experienced substantial swings in value, reflecting the intense market instability of the time.
+
+- *COVID-19 Pandemic (Red Violin):* This period shows a significant spread in daily returns, suggesting a high level of volatility. The wider sections of the violin indicate that there were many days with large fluctuations in returns, both positive and negative.
+
+- *Russia-Ukraine War (Green Violin):* This violin appears narrower than the others, especially compared to the Great Recession, suggesting that the daily returns were less volatile during this event. However, there is still a noticeable spread, indicating some days of significant market movement.
+
+Overall, the violin plot illustrates that the Great Recession had the most pronounced impact on the S&P 500's daily return volatility, followed by the COVID-19 pandemic, with Russia-Ukraine War having a relatively lower level of volatility. This visual analysis helps to understand the market's reaction to different global crises and can be useful for investors and analysts in making informed decisions.
+
+
+### EDA: Stats: Summary Statistics
+
+- We will now calculate summary statistics for the S&P 500 index during the events of our interest.
+- The summary statistics include the 
+    - mean daily returns
+    - median daily returns
+    - maximum daily returns
+    - minimum daily returns 
+  for each event, providing a concise overview of the index's performance during these periods.
+
+
+```{r, include=TRUE, results='asis'}
+# Defining a function to compute summary statistics
+compute_summary <- function(data) {
+  data %>%
+    summarize(mean_return = mean(daily_change, na.rm = TRUE),
+              median_return = median(daily_change, na.rm = TRUE),
+              max_return = max(daily_change, na.rm = TRUE),
+              min_return = min(daily_change, na.rm = TRUE))
+}
+# Apply the function to each event data
+great_recession_summary <- compute_summary(great_recession_data)
+covid_summary <- compute_summary(covid_data)
+russia_ukraine_summary <- compute_summary(russia_ukraine_data)
+
+# Display the summary statistics
+xkabledply(great_recession_summary)
+xkabledply(covid_summary)
+xkabledply(russia_ukraine_summary)
+```
+
+From the above statistics, we can observe the following insights:
+
+- The mean daily returns for the S&P 500 index were the lowest during the Great Recession, indicating a period of significant market decline and volatility.
+- The median daily returns were also negative during the Great Recession, which might be indicating the widespread impact of the economic downturn on the stock market.
+
+### EDA: Stats: Comparing Standard Deviations
+
+```{r, include=TRUE, results='show'}
+gr_sd <- sd(great_recession_data$daily_change, na.rm = TRUE)
+covid_sd <- sd(covid_data$daily_change, na.rm = TRUE)
+ruw_sd <- sd(russia_ukraine_data$daily_change, na.rm = TRUE)
+```
+
+Now we calculate and compare the standard deviation of daily returns for each event to measure the volatility of the S&P 500 index around these events. The standard deviation provides a measure of the dispersion or variability of the daily returns, allowing us to assess the risk and potential impact of these events on the stock market. 
+
+- The standard deviation values for the daily returns during the Great Recession, COVID-19 pandemic, and Russia-Ukraine War are as follows:
+  - Great Recession: `r gr_sd`
+  - COVID-19 Pandemic: `r covid_sd`
+  - Russia-Ukraine War: `r ruw_sd`
+
+- As we see in the above graphs and the standard deviation values, the volatility of the S&P 500 index was highest during the Great Recession, followed by the COVID-19 pandemic and the Russia-Ukraine invasion.
+
