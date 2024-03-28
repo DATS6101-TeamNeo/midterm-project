@@ -55,7 +55,7 @@ russia_ukraine_data <- new_df2 %>%
 ```
 
 ## 1.Abstract
-<span style="font-size: 12px;  text-align: justify;">
+<span style="  text-align: justify;">
 <p> In this project, we aim to analyze the impact of major historical events on the S&P 500 index, focusing on the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine conflict. By examining the index's performance before and after these events, we seek to understand how economic downturns, geopolitical crises, and global pandemics influence stock market behavior.
 
 <P>The objective of this project is to explore the relationship between the S&P 500 index and these major historical events, providing insights into the index's resilience, volatility, and performance during times of crisis. By analyzing the index's behavior during these critical periods, we aim to uncover patterns, trends, and correlations useful for data-driven decision-making.
@@ -118,7 +118,7 @@ num_variables <- subset(new_df,select = -c(1))
 head(num_variables)
 ```
 
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> As we can see with respect to close variable there were two variables close and adjusted close and therefore we drop the adjusted close column as we want the raw values of close variable and thus we choose close variable. Other than that we have variables such Date, Open, Close, High, Low and Volume. We also create another dataset with all numerical variables and name it as num_variables.
 
@@ -130,7 +130,7 @@ head(num_variables)
 head(new_df)
 ```
 
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> The code calculates daily returns for the S&P 500 index, which represent the percentage change in closing prices from the previous day. These returns help analyze index volatility during important events.
 
@@ -142,7 +142,7 @@ corr_matrix <- cor(num_variables)
 corrplot(corr_matrix)
 corr_matrix
 ```
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> This summary presents a correlation matrix of various financial metrics, including Open, High, Low, Close prices, and Volume. Each cell represents the correlation coefficient between the respective metrics. For instance, the correlation coefficient between Open and Volume is 0.25, indicating a weak positive correlation. Similarly, the correlation between High and Volume is 0.253, Low and Volume is 0.245, Close and Volume is 0.249, all suggesting weak positive correlations. The correlation coefficient of 1.0 across the diagonal indicates perfect correlation between each metric with itself, as expected.
 
@@ -155,7 +155,7 @@ qqnorm(new_df2$daily_change, main = "Q-Q Plot of Daily Returns")
 qqline(new_df2$daily_change, col = "red") # Add reference line
 
 ```
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> The Q-Q plot reveals that the distribution of daily returns closely follows a normal distribution, although there are deviations at the extremes likely caused by outliers. To validate this observation, we will proceed to create a histogram of the daily returns.
 
@@ -165,7 +165,7 @@ qqline(new_df2$daily_change, col = "red") # Add reference line
 # hist(new_df2$daily_change_standardized, breaks = 50, col = 'green', main = "Histogram daily returns standardized distribution",xlab = "daily returns")
 hist(new_df2$daily_change, breaks = 100, col = 'green', main = "Histogram daily returns distribution",xlab = "daily returns")
 ```
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> Upon observing the bell-shaped curve depicted in the histogram, we can affirm that the daily returns adhere to a normal distribution.This visualization is crucial for understanding the distribution pattern of daily percentage changes in the S&P 500 index. By analyzing the histogram, we gain valuable insights into the frequency and magnitude of daily returns, enabling us to evaluate market volatility, risk, and potential trends. The bars in the histogram are colored green, but you have the flexibility to adjust the color (col) parameter to your preference.
 
@@ -174,7 +174,7 @@ hist(new_df2$daily_change, breaks = 100, col = 'green', main = "Histogram daily 
 ```{r, include=T}
 plot(new_df2$Date, new_df2$Close, type = "l", col = "blue", xlab = "Date", ylab = "Close", main = "Close of S&P500 Index")
 ```
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> The graph provides a visual depiction of the historical trend in closing values of the S&P 500 index over time. Utilizing a line graph format, we can observe the general trajectory of the index, whether it's ascending, descending, or relatively consistent, while also pinpointing periods characterized by notable fluctuations or volatility.
 
@@ -217,7 +217,7 @@ ggplot() +
   scale_x_discrete(limits = unique(c(pre_recession_yearly_returns$Year, during_recession_yearly_returns$Year, post_recession_yearly_returns$Year))) +
   theme_minimal()
 ```
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> The annual returns for the S&P 500 index spanning the periods before, during, and after the Great Recession. These annual returns are determined as the percentage change in closing prices from the start to the end of each year. Subsequently, we analyze and compare the mean annual returns across these periods. To gain insights into the index's performance surrounding the Great Recession, we illustrate the annual returns through bar plots.
 
@@ -253,7 +253,7 @@ ggplot() +
   scale_x_discrete(limits = unique(c(pre_pandemic_yearly_returns$Year, covid_pandemic_yearly_returns$Year, post_pandemic_yearly_returns$Year))) +
   theme_minimal()
 ```
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> We establish the end of the lockdown period as the starting point for the pre-Russia-Ukraine invasion period.Additionally, we compute the annual returns for the S&P 500 index before, during, and after the COVID-19 pandemic. These annual returns are determined as the percentage change in closing prices from the start to the end of each year. Subsequently, we analyze and compare the mean annual returns across these periods. To gain insights into the index's performance surrounding the COVID-19 pandemic, we visualize the annual returns using bar plots, similar to the previous plot.
 
@@ -584,19 +584,9 @@ t_test_GR
 
 ## SMART QUESTION 2   : How is the S&P500 Index affected by the COVID-19 pandemic?
 <span style=" text-align: justify;">
-<p> Covid-19 has several negative and positive effects on the Society and S&P500 as a whole</p>
 
-<p><strong> Positive Effects:</strong></p>
-<p>
-The COVID-19 outbreak acted as a catalyst, rapidly advancing the shift towards digitalization and remote operations across many sectors. This transition played into the strengths of major technology firms. Companies such as Amazon, Microsoft, Apple, and Google experienced a surge in the demand for their digital offerings and solutions that enabled remote work, online shopping, virtual communication, and digital entertainment. As a result of this heightened demand, the stocks of these tech giants saw substantial price increases. Given their significant weightings in the S&P 500 index, the stock price appreciation of these technology behemoths made a positive contribution to the overall performance of the benchmark index.</p>
-
-<p>To mitigate the economic impacts of the lockdowns imposed due to the pandemic, central banks like the Federal Reserve and governments across the globe injected substantial amounts of capital and enacted stimulus programs. This massive influx of liquidity into the financial system helped stabilize and calm the markets during a period of heightened volatility and uncertainty. Moreover, these interventions bolstered investor sentiment and confidence in the markets' resilience. Consequently, this renewed optimism among investors, fueled by the stimulus measures, had a favorable effect on the performance of the S&P 500 index. similarly these helped in growth of healthcare growth</p>
-
-
-<p><strong>Negative Effects:</strong> </p>
-<p>Firstly, Industries such as travel, hospitality, and retail were severely affected by lockdowns and reduced consumer spending. Companies in these sectors experienced significant stock price declines, dragging down the overall performance of the S&P 500.</p>  
-<p>The pandemic caused extreme volatility in financial markets. Uncertainty about the virus's impact on the economy led to sharp market swings, causing fluctuations in the S&P 500 and increasing investor anxiety.</p>
-
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Covid19 Pandemic, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after Covid19 Pandemic , we can gain insights into how the index was impacted by this economic downturn.)
+<P>
 
 <p><b>Null Hypothesis</b> : There is no significant difference between the S&P 500 Index before and after the Covid-19.</p>
 
@@ -630,13 +620,13 @@ new_after_RUW <- subset(new_df2,Date <= '2023-12-31'  & Date >= '2022-02-24' )
 t_test_RUW = t.test(new_before_RUW$Close ,new_after_RUW$Close)
 t_test_RUW
 ```
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> Given these findings, as the p-value substantially falls below the significance level of 0.05, we reject the null hypothesis. Consequently, we deduce a significant disparity between the means. However, the obtained outcome contradicts expectations. Despite the commencement of the invasion, the market rebounded within a year, resulting in a mean after the invasion greater than the mean before.
 
 
 ## Conclusion
-<span style="font-size: 20px;  text-align: justify;">
+<span style="  text-align: justify;">
 
 <p> In this project, we embarked on an exciting journey to uncover the impact of major global events on the S&P 500 stock market index. 
 Our analysis focused on three significant occurrences: the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine war. 
