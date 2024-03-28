@@ -95,6 +95,165 @@ The S&P 500 is a stock market index that measures the performance of 500 large-c
 </style>
 
 </br>
+## 4. Exploratory Data Analysis 
+
+
+### Data Preprocessing
+
+### Step : 1 : Dropping unwanted variables and extracting numerical variables.
+```{r, include=T, results=T}
+df <- data.frame(read.csv('../dataset2003-2023.csv'))
+df$Date <- as.Date(df$Date)
+str(df)
+new_df <- subset(df, select = -c(6))
+str(new_df)
+summary(new_df)
+num_variables <- subset(new_df,select = -c(1))
+head(num_variables)
+```
+
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> As we can see with respect to close variable there were two variables close and adjusted close and therefore we drop the adjusted close column as we want the raw values of close variable and thus we choose close variable. Other than that we have variables such Date, Open, Close, High, Low and Volume. We also create another dataset with all numerical variables and name it as num_variables.
+
+
+### Step : 2 : Creating new variable named daily change to compute daily change close value.
+
+
+```{r, include=T, results=T}
+new_df$daily_change <- (new_df$Close / lag(new_df$Close) - 1) * 100
+
+head(new_df)
+```
+
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> The code calculates daily returns for the S&P 500 index, which represent the percentage change in closing prices from the previous day. These returns help analyze index volatility during important events.
+
+
+### Step : 3 : Creating correlation heatmap for all the numeric variables.
+
+```{r, include=T, results=T}
+library(corrplot)
+corr_matrix <- cor(num_variables)
+corrplot(corr_matrix)
+corr_matrix
+```
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> This summary presents a correlation matrix of various financial metrics, including Open, High, Low, Close prices, and Volume. Each cell represents the correlation coefficient between the respective metrics. For instance, the correlation coefficient between Open and Volume is 0.25, indicating a weak positive correlation. Similarly, the correlation between High and Volume is 0.253, Low and Volume is 0.245, Close and Volume is 0.249, all suggesting weak positive correlations. The correlation coefficient of 1.0 across the diagonal indicates perfect correlation between each metric with itself, as expected.
+
+
+### Step : 4 : QQ plot for daily change.
+
+```{r, include=T, results=T}
+new_df2 <- na.omit(new_df)
+
+qqnorm(new_df2$daily_change, main = "Q-Q Plot of Daily Returns")
+qqline(new_df2$daily_change, col = "red") # Add reference line
+
+```
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> The Q-Q plot reveals that the distribution of daily returns closely follows a normal distribution, although there are deviations at the extremes likely caused by outliers. To validate this observation, we will proceed to create a histogram of the daily returns.
+
+### Step : 5 : Plotting Histogram for the daily change variable.
+
+```{r, include=T}
+# hist(new_df2$daily_change_standardized, breaks = 50, col = 'green', main = "Histogram daily returns standardized distribution",xlab = "daily returns")
+hist(new_df2$daily_change, breaks = 100, col = 'green', main = "Histogram daily returns distribution",xlab = "daily returns")
+```
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> Upon observing the bell-shaped curve depicted in the histogram, we can affirm that the daily returns adhere to a normal distribution.This visualization is crucial for understanding the distribution pattern of daily percentage changes in the S&P 500 index. By analyzing the histogram, we gain valuable insights into the frequency and magnitude of daily returns, enabling us to evaluate market volatility, risk, and potential trends. The bars in the histogram are colored green, but you have the flexibility to adjust the color (col) parameter to your preference.
+
+### Step : 6 : Plotting line graph to see the trend basis close variable.
+
+```{r, include=T}
+plot(new_df2$Date, new_df2$Close, type = "l", col = "blue", xlab = "Date", ylab = "Close", main = "Close of S&P500 Index")
+```
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> The graph provides a visual depiction of the historical trend in closing values of the S&P 500 index over time. Utilizing a line graph format, we can observe the general trajectory of the index, whether it's ascending, descending, or relatively consistent, while also pinpointing periods characterized by notable fluctuations or volatility.
+
+
+### Step : 7 : Plotting bar graph to check difference.
+
+```{r, include=T}
+pre_recession <- new_df2 %>%
+  filter(Date >= as.Date("2003-01-01") & Date <= (great_recession_start - days(1)))
+
+during_recession <- new_df2 %>%
+  filter(Date >= great_recession_start & Date <= great_recession_end)
+
+post_recession <- new_df2 %>%
+  filter(Date >= (great_recession_end + days(1)) & Date <= as.Date("2019-12-31"))
+
+# Define a function to calculate yearly returns
+calculate_yearly_returns <- function(data) {
+  data %>%
+    mutate(Year = format(Date, "%Y")) %>%
+    group_by(Year) %>%
+    summarize(start_price = first(Close),
+              end_price = last(Close),
+              yearly_return = (end_price - start_price) / start_price * 100)
+}
+
+# Apply the function to each period data
+pre_recession_yearly_returns <- calculate_yearly_returns(pre_recession)
+during_recession_yearly_returns <- calculate_yearly_returns(during_recession)
+post_recession_yearly_returns <- calculate_yearly_returns(post_recession)
+library(ggplot2)
+# Visualize yearly returns
+ggplot() +
+  geom_bar(data = pre_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "steelblue") +
+  geom_bar(data = during_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "firebrick") +
+  geom_bar(data = post_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "forestgreen") +
+  xlab("Year") +
+  ylab("Yearly Return (%)") +
+  ggtitle("S&P 500 Yearly Returns") +
+  scale_x_discrete(limits = unique(c(pre_recession_yearly_returns$Year, during_recession_yearly_returns$Year, post_recession_yearly_returns$Year))) +
+  theme_minimal()
+```
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> The annual returns for the S&P 500 index spanning the periods before, during, and after the Great Recession. These annual returns are determined as the percentage change in closing prices from the start to the end of each year. Subsequently, we analyze and compare the mean annual returns across these periods. To gain insights into the index's performance surrounding the Great Recession, we illustrate the annual returns through bar plots.
+
+
+```{r, include=T}
+# Link used for considering the virus progression end date: https://www.defense.gov/Spotlights/Coronavirus-DOD-Response/Timeline/
+# Subset the data for the specified periods
+pre_pandemic <- new_df2 %>%
+  filter(Date >= as.Date("2009-07-01") & Date <= as.Date("2019-12-31"))
+
+#covid_pandemic <- new_df2 %>%
+ # filter(Date >= as.Date("2020-01-01") & Date <= as.Date("2022-05-31"))
+
+covid_pandemic <- covid_data
+
+post_pandemic <- new_df2 %>%
+  filter(Date >= covid_end & Date <= Sys.Date())
+
+# Apply the function to each period data
+pre_pandemic_yearly_returns <- calculate_yearly_returns(pre_pandemic)
+covid_pandemic_yearly_returns <- calculate_yearly_returns(covid_pandemic)
+post_pandemic_yearly_returns <- calculate_yearly_returns(post_pandemic)
+
+library(ggplot2)
+# Visualize yearly returns
+ggplot() +
+  geom_bar(data = pre_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "steelblue") +
+  geom_bar(data = covid_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "firebrick") +
+  geom_bar(data = post_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "forestgreen") +
+  xlab("Year") +
+  ylab("Yearly Return (%)") +
+  ggtitle("S&P 500 Yearly Returns") +
+  scale_x_discrete(limits = unique(c(pre_pandemic_yearly_returns$Year, covid_pandemic_yearly_returns$Year, post_pandemic_yearly_returns$Year))) +
+  theme_minimal()
+```
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> We establish the end of the lockdown period as the starting point for the pre-Russia-Ukraine invasion period.Additionally, we compute the annual returns for the S&P 500 index before, during, and after the COVID-19 pandemic. These annual returns are determined as the percentage change in closing prices from the start to the end of each year. Subsequently, we analyze and compare the mean annual returns across these periods. To gain insights into the index's performance surrounding the COVID-19 pandemic, we visualize the annual returns using bar plots, similar to the previous plot.
 
 ## EDA: Volatility analysis during Major Historical Events
 
@@ -469,3 +628,22 @@ t_test_covid
 <p>By comparing and performing analysis using t-test. we have found that the mean of close instance before covid and after covid is not as expected. the mean of close is higher after the covid by 1266 compared to before covid. Furthermore the p-value is less than 2e-16 which means we reject null hypothesis. After reading an article from Wall street journal we have come to know that covid effects were reduced and recovered within just 119 days which is very less compared to Great recession as the government got involved and helped the stock market recover faster than expected.</p>
 
 </span>
+
+## SMART QUESTION 3   : How is the S&P500 Index affected by the Russia-Ukraine Invasion?
+
+```{r, include=TRUE, results=T}
+new_before_RUW <- subset(new_df2,Date <= '2022-02-23'  & Date >= '2020-01-01' )
+new_after_RUW <- subset(new_df2,Date <= '2023-12-31'  & Date >= '2022-02-24' )
+
+t_test_RUW = t.test(new_before_RUW$Close ,new_after_RUW$Close)
+t_test_RUW
+```
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> Given these findings, as the p-value substantially falls below the significance level of 0.05, we reject the null hypothesis. Consequently, we deduce a significant disparity between the means. However, the obtained outcome contradicts expectations. Despite the commencement of the invasion, the market rebounded within a year, resulting in a mean after the invasion greater than the mean before.
+
+
+## Conclusion
+<span style="font-size: 20px;  text-align: justify;">
+
+<p> The analysis reveals a decline in the S&P 500 price index following the Great Recession, with subsequent recovery over time. The t-test indicates a significant difference between the mean values before and after the recession. Specifically, the mean value before exceeds that after.Contrastingly, for the period before and after COVID-19, the mean close price is lower before compared to after. Likewise, in the context of the Russia-Ukraine war, the mean value before is lower compared to that after.
