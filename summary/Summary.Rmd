@@ -1,0 +1,654 @@
+---
+title: "Summary Paper: Effect of Major Historical Events on S&P500 Index"
+author: "Bharat Khandewal, Dinesh Chandra Gaddam, Phanindra Kumar Kalaga, Prudhvi chekuri"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    toc: yes
+---
+
+```{r init, include=FALSE, echo=FALSE}
+# Load all required packagess
+library(dplyr)
+library(ggplot2)
+library(ezids)
+library(lubridate)
+library(corrplot)
+knitr::opts_chunk$set(warning = F, results = "markup", message = F)
+options(scientific = T, digits = 3)
+```
+
+```{r, include=TRUE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+df <- data.frame(read.csv("../dataset2003-2023.csv"))
+
+df$Date <- as.Date(df$Date)
+
+new_df <- subset(df, select = -c(6))
+
+new_df$daily_change <- (new_df$Close / lag(new_df$Close) - 1) * 100
+
+new_df2 <- na.omit(new_df)
+
+# Define the event windows
+great_recession_start <- as.Date("2007-12-31")
+great_recession_end <- as.Date("2009-06-30")
+
+covid_start <- as.Date("2020-02-03")
+lockdown_end <- as.Date("2020-08-31")
+covid_end <- as.Date("2023-05-11")
+
+russia_ukraine_start <- as.Date("2022-02-24")
+russia_ukraine_end <- Sys.Date() # Current date
+
+# Subset the data for the event window
+great_recession_data <- new_df2 %>%
+  filter(Date >= great_recession_start & Date <= great_recession_end)
+
+covid_data <- new_df2 %>%
+  filter(Date >= covid_start & Date <= covid_end)
+
+russia_ukraine_data <- new_df2 %>%
+  filter(Date >= russia_ukraine_start & Date <= russia_ukraine_end)
+```
+
+## 1.Abstract
+<span style="  text-align: justify;">
+<p> In this project, we aim to analyze the impact of major historical events on the S&P 500 index, focusing on the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine conflict. By examining the index's performance before and after these events, we seek to understand how economic downturns, geopolitical crises, and global pandemics influence stock market behavior.
+
+<P>The objective of this project is to explore the relationship between the S&P 500 index and these major historical events, providing insights into the index's resilience, volatility, and performance during times of crisis. By analyzing the index's behavior during these critical periods, we aim to uncover patterns, trends, and correlations useful for data-driven decision-making.
+
+<p> Our analysis will focus on key metrics such as volatility, returns, and performance indicators, comparing the S&P 500 index's performance during the Great Recession, COVID-19 pandemic, and Russia-Ukraine conflict. By examining these three distinct periods, we aim to identify how the index responds to external shocks, recovers from downturns, and adapts to changing market conditions.
+
+<p> The results of this analysis can provide valuable insights for investors, financial analysts, and policymakers, helping them navigate turbulent market conditions, mitigate risks, and capitalize on opportunities. By understanding the impact of major historical events on the S&P 500 index, stakeholders can make more informed decisions, optimize their investment strategies, and achieve better outcomes in the stock market.
+</span>
+
+## 2. Introduction
+<span style=" text-align: justify;">
+<p>
+The S&P 500 is a stock market index that measures the performance of 500 large-cap U.S. companies listed on stock exchanges. An index in finance refers to a statistical measure of change in a securities market. It typically represents a portfolio of securities that represent a particular market or sector. Stock market indices are used to track the performance of a specific group of stocks.overall, The index is market-capitalization -weighted, meaning that larger companies have a greater impact on its value. Now, coming to the S&P 500, it includes companies from diverse industries such as technology, healthcare, financial services, consumer discretionary and industries. The S&P 500 is widely regarded as one of the best benchmarks for the performance of the U.S. stock market.
+</P>
+<P>This project utilizes a dataset from Yahoo finance containing information on over 6,000 instances, with the goal of developing Explanatory Data Analysis to effectively distinguish Data observations for analysis. The dataset includes characteristics such as open, close, High, Volume and Low. Through exploratory data analysis, we will identify trends and correlations between these features and gather insights. Firstly we will see if the dataset needs any changes like pre processing then we will continue with analysis using t-test's. 
+</P>
+<P>The results produced from this project  can provide valuable insights into market dynamics, risk management, investment strategies, and decision-making, contributing to more informed and successful investing over time.
+</P>
+</span>
+
+## 3. Dataset 
+<span style=" text-align: justify;">
+<p>Our dataset is available as [S&P 500 (^GSPC)](https://finance.yahoo.com/quote/%5EGSPC/history/?guccounter=1) on Yahoo Finance website. All the data is sourced from Yahoo Finance website and covers data from 2003-2023. The dataset consists of 5285 data points (records) and 6 features(columns). Also, there are no null values in the dataset.
+<P>
+<p>Features’ description is given below;
+</span>
+
+
+<div class="column-definitions">
+  <p><strong>1. Open:</strong> Opening price of the S&P 500 index on a given date.</p>
+  <p><strong>2. Close:</strong> Closing price of the S&P 500 index on a given date.</p>
+  <p><strong>3. High:</strong> The highest price
+  attained by S&P 500 index on a given date.</p>
+  <p><strong>4. Low:</strong> The lowest price observed for the S&P 500 index on a given date.</p>
+  <p><strong>5. Volume:</strong> The total number of shares of all S&P 500 index components traded on a given date.</p>
+  <p><strong>6. Daily Change:</strong> The difference in price between the current day's closing price and the previous day's closing price.</p>
+</div>
+
+<style>
+  .column-definitions {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f7f7f7;
+  }
+</style>
+
+</br>
+## 4. Exploratory Data Analysis 
+
+
+### Data Preprocessing
+
+### Step : 1 : Dropping unwanted variables and extracting numerical variables.
+```{r, include=T, results=T}
+str(df)
+str(new_df)
+summary(new_df)
+num_variables <- subset(new_df,select = -c(1))
+head(num_variables)
+```
+
+<span style="  text-align: justify;">
+
+<p> As we can see with respect to close variable there were two variables close and adjusted close and therefore we drop the adjusted close column as we want the raw values of close variable and thus we choose close variable. Other than that we have variables such Date, Open, Close, High, Low and Volume. We also create another dataset with all numerical variables and name it as num_variables.
+
+
+### Step : 2 : Creating new variable named daily change to compute daily change close value.
+
+
+```{r, include=T, results=T}
+head(new_df)
+```
+
+<span style="  text-align: justify;">
+
+<p> The code calculates daily returns for the S&P 500 index, which represent the percentage change in closing prices from the previous day. These returns help analyze index volatility during important events.
+
+
+### Step : 3 : Creating correlation heatmap for all the numeric variables.
+
+```{r, include=T, results=T}
+corr_matrix <- cor(num_variables)
+corrplot(corr_matrix)
+corr_matrix
+```
+<span style="  text-align: justify;">
+
+<p> This summary presents a correlation matrix of various financial metrics, including Open, High, Low, Close prices, and Volume. Each cell represents the correlation coefficient between the respective metrics. For instance, the correlation coefficient between Open and Volume is 0.25, indicating a weak positive correlation. Similarly, the correlation between High and Volume is 0.253, Low and Volume is 0.245, Close and Volume is 0.249, all suggesting weak positive correlations. The correlation coefficient of 1.0 across the diagonal indicates perfect correlation between each metric with itself, as expected.
+
+
+### Step : 4 : QQ plot for daily change.
+
+```{r, include=T, results=T}
+
+qqnorm(new_df2$daily_change, main = "Q-Q Plot of Daily Returns")
+qqline(new_df2$daily_change, col = "red") # Add reference line
+
+```
+<span style="  text-align: justify;">
+
+<p> The Q-Q plot reveals that the distribution of daily returns closely follows a normal distribution, although there are deviations at the extremes likely caused by outliers. To validate this observation, we will proceed to create a histogram of the daily returns.
+
+### Step : 5 : Plotting Histogram for the daily change variable.
+
+```{r, include=T}
+# hist(new_df2$daily_change_standardized, breaks = 50, col = 'green', main = "Histogram daily returns standardized distribution",xlab = "daily returns")
+hist(new_df2$daily_change, breaks = 100, col = 'green', main = "Histogram daily returns distribution",xlab = "daily returns")
+```
+<span style="  text-align: justify;">
+
+<p> Upon observing the bell-shaped curve depicted in the histogram, we can affirm that the daily returns adhere to a normal distribution.This visualization is crucial for understanding the distribution pattern of daily percentage changes in the S&P 500 index. By analyzing the histogram, we gain valuable insights into the frequency and magnitude of daily returns, enabling us to evaluate market volatility, risk, and potential trends. The bars in the histogram are colored green, but you have the flexibility to adjust the color (col) parameter to your preference.
+
+### Step : 6 : Plotting line graph to see the trend basis close variable.
+
+```{r, include=T}
+plot(new_df2$Date, new_df2$Close, type = "l", col = "blue", xlab = "Date", ylab = "Close", main = "Close of S&P500 Index")
+```
+<span style="  text-align: justify;">
+
+<p> The graph provides a visual depiction of the historical trend in closing values of the S&P 500 index over time. Utilizing a line graph format, we can observe the general trajectory of the index, whether it's ascending, descending, or relatively consistent, while also pinpointing periods characterized by notable fluctuations or volatility.
+
+
+### Step : 7 : Plotting bar graph to check difference.
+
+```{r, include=T}
+pre_recession <- new_df2 %>%
+  filter(Date >= as.Date("2003-01-01") & Date <= (great_recession_start - days(1)))
+
+during_recession <- new_df2 %>%
+  filter(Date >= great_recession_start & Date <= great_recession_end)
+
+post_recession <- new_df2 %>%
+  filter(Date >= (great_recession_end + days(1)) & Date <= as.Date("2019-12-31"))
+
+# Define a function to calculate yearly returns
+calculate_yearly_returns <- function(data) {
+  data %>%
+    mutate(Year = format(Date, "%Y")) %>%
+    group_by(Year) %>%
+    summarize(start_price = first(Close),
+              end_price = last(Close),
+              yearly_return = (end_price - start_price) / start_price * 100)
+}
+
+# Apply the function to each period data
+pre_recession_yearly_returns <- calculate_yearly_returns(pre_recession)
+during_recession_yearly_returns <- calculate_yearly_returns(during_recession)
+post_recession_yearly_returns <- calculate_yearly_returns(post_recession)
+library(ggplot2)
+# Visualize yearly returns
+ggplot() +
+  geom_bar(data = pre_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "steelblue") +
+  geom_bar(data = during_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "firebrick") +
+  geom_bar(data = post_recession_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "forestgreen") +
+  xlab("Year") +
+  ylab("Yearly Return (%)") +
+  ggtitle("S&P 500 Yearly Returns") +
+  scale_x_discrete(limits = unique(c(pre_recession_yearly_returns$Year, during_recession_yearly_returns$Year, post_recession_yearly_returns$Year))) +
+  theme_minimal()
+```
+<span style="  text-align: justify;">
+
+<p> The annual returns for the S&P 500 index spanning the periods before, during, and after the Great Recession. These annual returns are determined as the percentage change in closing prices from the start to the end of each year. Subsequently, we analyze and compare the mean annual returns across these periods. To gain insights into the index's performance surrounding the Great Recession, we illustrate the annual returns through bar plots.
+
+
+```{r, include=T}
+# Link used for considering the virus progression end date: https://www.defense.gov/Spotlights/Coronavirus-DOD-Response/Timeline/
+# Subset the data for the specified periods
+pre_pandemic <- new_df2 %>%
+  filter(Date >= as.Date("2009-07-01") & Date <= as.Date("2019-12-31"))
+
+#covid_pandemic <- new_df2 %>%
+ # filter(Date >= as.Date("2020-01-01") & Date <= as.Date("2022-05-31"))
+
+covid_pandemic <- covid_data
+
+post_pandemic <- new_df2 %>%
+  filter(Date >= covid_end & Date <= Sys.Date())
+
+# Apply the function to each period data
+pre_pandemic_yearly_returns <- calculate_yearly_returns(pre_pandemic)
+covid_pandemic_yearly_returns <- calculate_yearly_returns(covid_pandemic)
+post_pandemic_yearly_returns <- calculate_yearly_returns(post_pandemic)
+
+library(ggplot2)
+# Visualize yearly returns
+ggplot() +
+  geom_bar(data = pre_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "steelblue") +
+  geom_bar(data = covid_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "firebrick") +
+  geom_bar(data = post_pandemic_yearly_returns, aes(x = Year, y = yearly_return), stat = "identity", fill = "forestgreen") +
+  xlab("Year") +
+  ylab("Yearly Return (%)") +
+  ggtitle("S&P 500 Yearly Returns") +
+  scale_x_discrete(limits = unique(c(pre_pandemic_yearly_returns$Year, covid_pandemic_yearly_returns$Year, post_pandemic_yearly_returns$Year))) +
+  theme_minimal()
+```
+<span style="  text-align: justify;">
+
+<p> We establish the end of the lockdown period as the starting point for the pre-Russia-Ukraine invasion period.Additionally, we compute the annual returns for the S&P 500 index before, during, and after the COVID-19 pandemic. These annual returns are determined as the percentage change in closing prices from the start to the end of each year. Subsequently, we analyze and compare the mean annual returns across these periods. To gain insights into the index's performance surrounding the COVID-19 pandemic, we visualize the annual returns using bar plots, similar to the previous plot.
+
+## EDA: Volatility analysis during Major Historical Events
+
+
+
+### EDA: Graphs: Line Plot of Close with Shaded Regions
+
+Now, we will create a line plot of the S&P 500 index closing prices with shaded regions corresponding to the periods before and after the start of events. This visualization will help us compare the index's performance before and after these events and understand the impact of these historical events on the stock market.
+
+#### During Great Recession
+
+```{r, include=TRUE, results='asis'}
+# Define event periods
+before_gr <- pre_recession
+
+during_gr <- during_recession
+
+# Line plot with shaded regions
+ggplot(new_df2, aes(x = Date, y = Close)) +
+  geom_line() +
+  geom_rect(
+    data = during_gr,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "red", alpha = 0.002
+  ) +
+  geom_rect(
+    data = before_gr,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "green", alpha = 0.002
+  ) +
+  labs(
+    title = "S&P 500 Index around Great Recession",
+    x = "Date",
+    y = "Closing Price"
+  ) +
+  theme_minimal()
+```
+
+The above code creates a line plot of the S&P 500 index closing prices and shades the regions corresponding to the periods before and during the Great Recession. This visualization allows us to compare the index's performance before and after the start of the Great Recession, providing insights into the impact of the event on the stock market. we observe that the index experienced a significant decline during the Great Recession, followed by a recovery period. the few reasons for the decline could be the housing market crash, the financial crisis, and the subsequent economic downturn.
+
+#### Recovery Period for Great Recession
+
+```{r, include=TRUE, results='asis'}
+# Calculating the recovery period for the Great Recession
+
+gr_lowest_point <- min(great_recession_data$Close)
+gr_lowest_point_date <- great_recession_data$Date[great_recession_data$Close == gr_lowest_point]
+gr_initial_level <- new_df2$Close[new_df2$Date == great_recession_start]
+gr_recovery_date <- min(new_df2$Date[new_df2$Close >= gr_initial_level & new_df2$Date > great_recession_start])
+
+
+gr_recovery_duration <- gr_recovery_date - gr_lowest_point_date
+
+print(gr_recovery_duration)
+```
+
+- The recovery period for the S&P500 Index during the Great Recession is 1403 days (about 4 years).
+- We calculated the recovery period for the S&P 500 index from its lowest point during the Great Recession to the point where it reached the initial level. 
+- This provides insights into the duration and speed of recovery following a significant decline in the stock market.
+
+
+#### During COVID-19 Pandemic
+
+```{r, include=TRUE, results=T}
+# Define event periods
+before_covid <- new_df2 %>%
+  filter(Date >= great_recession_end + days(1) & Date <= covid_start - days(1))
+
+during_covid <- covid_data
+
+after_covid <- new_df2 %>%
+  filter(Date >= as.Date("2022-06-01") & Date <= Sys.Date())
+
+# Line plot with shaded regions
+ggplot(new_df2, aes(x = Date, y = Close)) +
+  geom_line() +
+  geom_rect(
+    data = during_covid,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "red", alpha = 0.002
+  ) +
+  geom_rect(
+    data = before_covid,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "green", alpha = 0.002
+  ) +
+  labs(
+    title = "S&P 500 Index around COVID-19 Pandemic",
+    x = "Date",
+    y = "Closing Price"
+  ) +
+  theme_minimal()
+```
+
+The above code creates a line plot of the S&P 500 index closing prices corresponding to the periods before and during the COVID-19 pandemic. This visualization allows us to compare the index's performance before and after the start of the COVID-19 pandemic, providing insights into the impact of the event on the stock market. we observe that the index experienced a significant decline during the COVID-19 pandemic, followed by a recovery period. the few reasons for the decline could be the lockdowns, travel restrictions, and the subsequent economic downturn.
+
+However the covid pandemic did not have a long lasting effect on the stock market as the recovery period was much faster than the great recession unlike expectations.the main reason was the federal government's intervention in the economy and the stock market. low interest rates(close to 0) and the stimulus packages helped the stock market recover faster than expected.
+ - Please refer the below link for more information on the stock market recovery from covid-19 pandemic
+    - reference: https://www.wsj.com/articles/the-s-p-500-sets-first-record-since-february-erasing-its-coronavirus-plunge-11597781130 
+
+
+#### Recovery Period for COVID-19 Pandemic
+
+
+```{r, include=TRUE, results='asis'}
+# Calculating the recovery period for the COVID-19 Pandemic
+
+  covid_lowest_point <- min(covid_data$Close)
+covid_lowest_point_date <- covid_data$Date[covid_data$Close == covid_lowest_point]
+covid_initial_level <- new_df2$Close[new_df2$Date == covid_start]
+covid_recovery_date <- min(new_df2$Date[new_df2$Close >= covid_initial_level & new_df2$Date > covid_lowest_point_date])
+
+covid_recovery_duration <- covid_recovery_date - covid_lowest_point_date
+
+print(covid_recovery_duration)
+```
+
+ 
+- The recovery period for the SandP500 Index from it's lowest during COVID-19 pandemic is 119 days.
+- This provides insights into the duration and speed of recovery following a significant decline in the stock market. 
+- However, the calculated recovery period shows that the stock market recovery from covid happenned much faster than the great recession.
+
+
+#### During Russia Ukraine Invasion
+ 
+```{r, include=TRUE, results=T}
+# Create a line plot with shaded regions
+ggplot(new_df2, aes(x = Date, y = Close)) +
+  geom_line() +
+  geom_rect(
+    data = russia_ukraine_data,
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "red", alpha = 0.002
+  ) +
+  geom_rect(
+    data = subset(new_df2, Date >= lockdown_end & Date <= russia_ukraine_start - days(1)),
+    aes(xmin = min(Date), xmax = max(Date), ymin = -Inf, ymax = Inf),
+    fill = "green", alpha = 0.002
+  ) +
+  labs(
+    title = "S&P 500 Index around Russia-Ukraine Conflict",
+    x = "Date",
+    y = "Closing Price"
+  ) +
+  theme_minimal()
+```
+
+#### Recovery Period for Russia Ukraine Invasion
+
+```{r, include=TRUE, results='asis'}
+# Calculating the recovery period for Russia Ukraine Invasion
+
+ruw_lowest_point <- min(russia_ukraine_data$Close)
+ruw_lowest_point_date <- russia_ukraine_data$Date[russia_ukraine_data$Close == ruw_lowest_point]
+ruw_initial_level <- new_df2$Close[new_df2$Date == russia_ukraine_start]
+ruw_recovery_date <- min(new_df2$Date[new_df2$Close >= ruw_initial_level & new_df2$Date > ruw_lowest_point_date])
+
+ruw_recovery_duration <- ruw_recovery_date - ruw_lowest_point_date
+
+print(ruw_recovery_duration)
+```
+
+- The Russia Ukraine invasion recovery period was calculated in the same way as the above two events. 
+- The calculated recovery period which is `r ruw_recovery_duration` shows that the stock market recovery from Russia Ukraine invasion was faster than the great recession but slower than the covid-19 pandemic. 
+- However since the War is still ongoing, the recovery period might change in the future.
+
+
+### EDA: Graphs: Line Plot for daily returns
+
+We are plotting a line graph to show the daily change percentage of the S&P 500 index specifially during the historical events.
+
+  - This graph will help us visualize the overall trend in the index's performance and identify any significant changes or patterns over time. 
+  - The daily change percentage is calculated as the percentage change in the index's closing price from the previous day, providing insights into the daily volatility and market movements.
+  
+(_The COVID-19 Virus end date used is the one officially declared by the [cdc.gov](https://www.cdc.gov/coronavirus/2019-ncov/your-health/end-of-phe.html)_)
+
+```{r, include=TRUE, results='asis'}
+# Visualize daily returns for each event
+ggplot(great_recession_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during Great Recession")
+```
+
+```{r, include=TRUE, results='asis'}
+ggplot(covid_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during COVID-19 Pandemic")
+```
+
+```{r, include=TRUE, results='asis'}
+ggplot(russia_ukraine_data, aes(x = Date, y = daily_change)) +
+  geom_line() +
+  xlab("Date") +
+  ylab("Daily Returns (%)") +
+  ggtitle("S&P 500 Daily Returns during Russia-Ukraine Invasion")
+```
+
+### EDA: Graphs: Violin Plot for daily returns
+
+Now, we will create a violin plot to compare the distribution of daily returns for each event side-by-side. 
+- This plot will provide a better visual representation of the volatility for comparing the daily returns during the historical events. 
+- The violin plot will help us understand the range and frequency of daily returns during these significant events and compare the level of volatility across different periods.
+
+```{r, include=TRUE, results='asis'}
+# Create a colorful violin plot to compare the distribution of daily returns for each event
+ggplot(new_df2, aes(
+  x = factor(ifelse(Date >= great_recession_start & Date <= great_recession_end, "Great Recession",
+    ifelse(Date >= covid_start & Date <= covid_end, "COVID-19 Pandemic",
+      "Russia-Ukraine Invasion"
+    )
+  )),
+  y = daily_change, fill = factor(ifelse(Date >= great_recession_start & Date <= great_recession_end, "Great Recession",
+    ifelse(Date >= covid_start & Date <= covid_end, "COVID-19 Pandemic",
+      "Russia-Ukraine Invasion"
+    )
+  ))
+)) +
+  geom_violin(alpha = 0.5) + # Set transparency to 0.7 (slightly translucent)
+  scale_fill_manual(values = c(
+    "Great Recession" = "blue",
+    "COVID-19 Pandemic" = "red",
+    "Russia-Ukraine Invasion" = "green"
+  )) +
+  labs(
+    x = "Event", y = "Daily Returns (%)",
+    title = "Distribution of S&P 500 Daily Returns around Major Events",
+    fill = "Event"
+  ) +
+  guides(fill = guide_legend(title = "Event"))
+```
+
+The violin plot provides a visual comparison of the S&P 500 index's daily return volatility during three distinct periods: the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine War. 
+Each violin represents the distribution of daily returns for one of these events, with the width of the plot indicating the frequency of returns at different levels.
+
+- *Great Recession (Blue Violin):* The widest violin plot among the three, indicating the highest volatility in daily returns during this period. The broad distribution suggests that the S&P 500 experienced substantial swings in value, reflecting the intense market instability of the time.
+
+- *COVID-19 Pandemic (Red Violin):* This period shows a significant spread in daily returns, suggesting a high level of volatility. The wider sections of the violin indicate that there were many days with large fluctuations in returns, both positive and negative.
+
+- *Russia-Ukraine War (Green Violin):* This violin appears narrower than the others, especially compared to the Great Recession, suggesting that the daily returns were less volatile during this event. However, there is still a noticeable spread, indicating some days of significant market movement.
+
+Overall, the violin plot illustrates that the Great Recession had the most pronounced impact on the S&P 500's daily return volatility, followed by the COVID-19 pandemic, with Russia-Ukraine War having a relatively lower level of volatility. This visual analysis helps to understand the market's reaction to different global crises and can be useful for investors and analysts in making informed decisions.
+
+
+### EDA: Stats: Summary Statistics
+
+- We will now calculate summary statistics for the S&P 500 index during the events of our interest.
+- The summary statistics include the 
+    - mean daily returns
+    - median daily returns
+    - maximum daily returns
+    - minimum daily returns 
+  for each event, providing a concise overview of the index's performance during these periods.
+
+
+```{r, include=TRUE, results='asis'}
+# Defining a function to compute summary statistics
+compute_summary <- function(data) {
+  data %>%
+    summarize(mean_return = mean(daily_change, na.rm = TRUE),
+              median_return = median(daily_change, na.rm = TRUE),
+              max_return = max(daily_change, na.rm = TRUE),
+              min_return = min(daily_change, na.rm = TRUE))
+}
+# Apply the function to each event data
+great_recession_summary <- compute_summary(great_recession_data)
+covid_summary <- compute_summary(covid_data)
+russia_ukraine_summary <- compute_summary(russia_ukraine_data)
+
+# Display the summary statistics
+xkabledply(great_recession_summary)
+xkabledply(covid_summary)
+xkabledply(russia_ukraine_summary)
+```
+
+From the above statistics, we can observe the following insights:
+
+- The mean daily returns for the S&P 500 index were the lowest during the Great Recession, indicating a period of significant market decline and volatility.
+- The median daily returns were also negative during the Great Recession, which might be indicating the widespread impact of the economic downturn on the stock market.
+
+### EDA: Stats: Comparing Standard Deviations
+
+```{r, include=TRUE, results='show'}
+gr_sd <- sd(great_recession_data$daily_change, na.rm = TRUE)
+covid_sd <- sd(covid_data$daily_change, na.rm = TRUE)
+ruw_sd <- sd(russia_ukraine_data$daily_change, na.rm = TRUE)
+```
+
+Now we calculate and compare the standard deviation of daily returns for each event to measure the volatility of the S&P 500 index around these events. The standard deviation provides a measure of the dispersion or variability of the daily returns, allowing us to assess the risk and potential impact of these events on the stock market. 
+
+- The standard deviation values for the daily returns during the Great Recession, COVID-19 pandemic, and Russia-Ukraine War are as follows:
+  - Great Recession: `r gr_sd`
+  - COVID-19 Pandemic: `r covid_sd`
+  - Russia-Ukraine War: `r ruw_sd`
+
+- As we see in the above graphs and the standard deviation values, the volatility of the S&P 500 index was highest during the Great Recession, followed by the COVID-19 pandemic and the Russia-Ukraine invasion.
+
+## SMART QUESTION : 1 How is the S&P500 Index affected by the Great Recession?
+
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
+<P>
+
+
+<p>**Null Hypothesis **: There is no significant difference between the S&P 500 Index before and after the Great Recession.
+<p>**Alternate Hypothesis **: There is a significant difference between the S&P 500 Index before and after the Great Recession.
+
+<p>------------------------------------------------------------------------------------------------------------</p>
+```{r, include=TRUE, echo=FALSE, results=TRUE}
+new_after_gr <- subset(new_df2, Date <= '2012-12-31'  & Date >= '2008-01-01')
+new_before_gr <- subset(new_df2, Date <= '2007-12-31'  & Date >= '2003-01-01')
+
+t_test_GR = t.test(new_before_gr$Close,new_after_gr$Close)
+
+t_test_GR
+```
+<p>------------------------------------------------------------------------------------------------------------</p>
+
+<p>**Observation: **
+
+<p> We can conclude that there is strong evidence to reject the null hypothesis as the p values is less than the level of significance 0.05. The test indicates a statistically significant difference in the means of the S&P 500 index closing values before and after the specified periods. The results are as expected that is before GR the mean was higher compared to the mean after GR and the main reason behind it is the number of days market took for recovery that is 1403 days.The results (P-value and Means of groups) of the t-test provide statistical evidence to support this conclusion.
+
+
+</span>
+
+
+## SMART QUESTION 2   : How is the S&P500 Index affected by the COVID-19 pandemic?
+<span style=" text-align: justify;">
+
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Covid19 Pandemic, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after Covid19 Pandemic , we can gain insights into how the index was impacted by this pandemic.)
+<P>
+
+<p><b>Null Hypothesis</b> : There is no significant difference between the S&P 500 Index before and after the Covid-19.</p>
+
+<p><b>Alternate Hypothesis</b> : There is a significant difference between the S&P 500 Index before and after the Covid-19.</p>
+
+
+<p>------------------------------------------------------------------------------------------------------------</p>
+<p><b>Welch Two Sample t-test</b></p>
+```{r, include=T,echo=FALSE, results=T}
+new_before_covid <- subset(new_df2, Date <= '2019-12-31'  & Date >= '2016-06-01')
+new_after_covid <- subset(new_df2, Date < '2023-05-11'  & Date >= '2020-01-01')
+
+t_test_covid = t.test(new_before_covid$Close, new_after_covid$Close, na.rm= TRUE)
+t_test_covid
+```
+
+<p>------------------------------------------------------------------------------------------------------------</p>
+
+<p><b>Observation:</b> </p>
+
+<p>By comparing and performing analysis using t-test. we have found that the mean of close instance before covid and after covid is not as expected. the mean of close is higher after the covid by 1266 compared to before covid. Furthermore the p-value is less than 2e-16 which means we reject null hypothesis. After reading an article from Wall street journal we have come to know that covid effects were reduced and recovered within just 119 days which is very less compared to Great recession as the government got involved and helped the stock market recover faster than expected.</p>
+
+</span>
+
+## SMART QUESTION 3   : How is the S&P500 Index affected by the Russia-Ukraine Invasion?
+
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Russia-Ukraine Invasion, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after Russia-Ukraine Invasion, we can gain insights into how the index was impacted by this war.)
+<P>
+
+<p><b>Null Hypothesis</b> : There is no significant difference between the S&P 500 Index before and after the Russia-Ukraine Invasion</p>
+
+<p><b>Alternate Hypothesis</b> : There is a significant difference between the S&P 500 Index before and after the Russia-Ukraine Invasion.</p>
+
+
+<p>------------------------------------------------------------------------------------------------------------</p>
+<p><b>Welch Two Sample t-test</b></p>
+```{r, include=TRUE, results=T}
+new_before_RUW <- subset(new_df2,Date <= '2022-02-23'  & Date >= '2020-01-01' )
+new_after_RUW <- subset(new_df2,Date <= '2023-12-31'  & Date >= '2022-02-24' )
+
+t_test_RUW = t.test(new_before_RUW$Close ,new_after_RUW$Close)
+t_test_RUW
+```
+<p>------------------------------------------------------------------------------------------------------------</p>
+<span style="  text-align: justify;">
+
+<p>**Observation: **Given these findings, as the p-value substantially falls below the significance level of 0.05, we reject the null hypothesis. Consequently, we deduce a significant disparity between the means. However, the obtained outcome contradicts expectations. Despite the commencement of the invasion, the market rebounded within a year, resulting in a mean after the invasion greater than the mean before.
+
+
+## Conclusion
+<span style="  text-align: justify;">
+
+<p> In this project, we embarked on an exciting journey to uncover the impact of major global events on the S&P 500 stock market index. 
+Our analysis focused on three significant occurrences: the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine war. 
+By examining the data and applying statistical techniques, we gained valuable insights into how these events influenced the stock market's performance.
+
+The Great Recession left a notable mark on the S&P 500 index, causing a substantial decline in value. However, the market demonstrated its resilience, and the index gradually recovered over time. The t-test revealed that the mean value before the recession significantly surpassed the mean value after the recession, highlighting the magnitude of the recession's impact.
+
+ - Interestingly, the COVID-19 pandemic and the Russia-Ukraine war exhibited different trends. 
+ - The average closing price of the S&P 500 index was lower before the pandemic compared to after, suggesting that the market performed better in the aftermath despite the challenges. 
+ - Similarly, the mean value of the index was lower before the Russia-Ukraine war compared to the period after the war began, underscoring the complex dynamics at play during geopolitical events.
+
+In conclusion, this project has been a thrilling adventure into the realm of stock market dynamics. By examining the impact of major events on the S&P 500 index, we have gained a deeper understanding of how the market responds to adversity and opportunity. As we continue to explore and innovate, we can look forward to a future where our insights drive smarter investment decisions and contribute to a more stable and prosperous financial landscape. The journey has just begun, and the best is yet to come!
