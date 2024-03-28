@@ -54,7 +54,7 @@ russia_ukraine_data <- new_df2 %>%
   filter(Date >= russia_ukraine_start & Date <= russia_ukraine_end)
 ```
 
-## 1.Abstract
+## 1. Abstract
 <span style="  text-align: justify;">
 <p> In this project, we aim to analyze the impact of major historical events on the S&P 500 index, focusing on the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine conflict. By examining the index's performance before and after these events, we seek to understand how economic downturns, geopolitical crises, and global pandemics influence stock market behavior.
 
@@ -104,12 +104,11 @@ The S&P 500 is a stock market index that measures the performance of 500 large-c
 </style>
 
 </br>
-## 4. Exploratory Data Analysis 
 
 
-### Data Preprocessing
+## 4. Data Preprocessing
 
-### Step : 1 : Dropping unwanted variables and extracting numerical variables.
+### Step 1 : Dropping unwanted variables and extracting numerical variables.
 ```{r, include=T, results=T}
 str(df)
 str(new_df)
@@ -123,7 +122,7 @@ head(num_variables)
 <p> As we can see with respect to close variable there were two variables close and adjusted close and therefore we drop the adjusted close column as we want the raw values of close variable and thus we choose close variable. Other than that we have variables such Date, Open, Close, High, Low and Volume. We also create another dataset with all numerical variables and name it as num_variables.
 
 
-### Step : 2 : Creating new variable named daily change to compute daily change close value.
+### Step 2 : Creating new variable named daily change to compute daily change close value.
 
 
 ```{r, include=T, results=T}
@@ -135,7 +134,7 @@ head(new_df)
 <p> The code calculates daily returns for the S&P 500 index, which represent the percentage change in closing prices from the previous day. These returns help analyze index volatility during important events.
 
 
-### Step : 3 : Creating correlation heatmap for all the numeric variables.
+### Step 3 : Creating correlation heatmap for all the numeric variables.
 
 ```{r, include=T, results=T}
 corr_matrix <- cor(num_variables)
@@ -147,7 +146,7 @@ corr_matrix
 <p> This summary presents a correlation matrix of various financial metrics, including Open, High, Low, Close prices, and Volume. Each cell represents the correlation coefficient between the respective metrics. For instance, the correlation coefficient between Open and Volume is 0.25, indicating a weak positive correlation. Similarly, the correlation between High and Volume is 0.253, Low and Volume is 0.245, Close and Volume is 0.249, all suggesting weak positive correlations. The correlation coefficient of 1.0 across the diagonal indicates perfect correlation between each metric with itself, as expected.
 
 
-### Step : 4 : QQ plot for daily change.
+### Step 4 : QQ plot for daily change.
 
 ```{r, include=T, results=T}
 
@@ -159,7 +158,7 @@ qqline(new_df2$daily_change, col = "red") # Add reference line
 
 <p> The Q-Q plot reveals that the distribution of daily returns closely follows a normal distribution, although there are deviations at the extremes likely caused by outliers. To validate this observation, we will proceed to create a histogram of the daily returns.
 
-### Step : 5 : Plotting Histogram for the daily change variable.
+### Step 5 : Plotting Histogram for the daily change variable.
 
 ```{r, include=T}
 # hist(new_df2$daily_change_standardized, breaks = 50, col = 'green', main = "Histogram daily returns standardized distribution",xlab = "daily returns")
@@ -169,7 +168,7 @@ hist(new_df2$daily_change, breaks = 100, col = 'green', main = "Histogram daily 
 
 <p> Upon observing the bell-shaped curve depicted in the histogram, we can affirm that the daily returns adhere to a normal distribution.This visualization is crucial for understanding the distribution pattern of daily percentage changes in the S&P 500 index. By analyzing the histogram, we gain valuable insights into the frequency and magnitude of daily returns, enabling us to evaluate market volatility, risk, and potential trends. The bars in the histogram are colored green, but you have the flexibility to adjust the color (col) parameter to your preference.
 
-### Step : 6 : Plotting line graph to see the trend basis close variable.
+### Step 6 : Plotting line graph to see the trend basis close variable.
 
 ```{r, include=T}
 plot(new_df2$Date, new_df2$Close, type = "l", col = "blue", xlab = "Date", ylab = "Close", main = "Close of S&P500 Index")
@@ -179,7 +178,7 @@ plot(new_df2$Date, new_df2$Close, type = "l", col = "blue", xlab = "Date", ylab 
 <p> The graph provides a visual depiction of the historical trend in closing values of the S&P 500 index over time. Utilizing a line graph format, we can observe the general trajectory of the index, whether it's ascending, descending, or relatively consistent, while also pinpointing periods characterized by notable fluctuations or volatility.
 
 
-### Step : 7 : Plotting bar graph to check difference.
+### Step 7 : Plotting bar graph to check difference.
 
 ```{r, include=T}
 pre_recession <- new_df2 %>%
@@ -556,7 +555,7 @@ Now we calculate and compare the standard deviation of daily returns for each ev
 
 - As we see in the above graphs and the standard deviation values, the volatility of the S&P 500 index was highest during the Great Recession, followed by the COVID-19 pandemic and the Russia-Ukraine invasion.
 
-## SMART QUESTION : 1 How is the S&P500 Index affected by the Great Recession?
+## SMART QUESTION 1   : How is the S&P500 Index affected by the Great Recession?
 
 <P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
 <P>
