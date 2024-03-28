@@ -558,13 +558,14 @@ Now we calculate and compare the standard deviation of daily returns for each ev
 
 ## SMART QUESTION : 1 How is the S&P500 Index affected by the Great Recession?
 
-<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing the S&P500 Index's performance during the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
 <P>
 
 
 <p>**Null Hypothesis **: There is no significant difference between the S&P 500 Index before and after the Great Recession.
 <p>**Alternate Hypothesis **: There is a significant difference between the S&P 500 Index before and after the Great Recession.
 
+<p>------------------------------------------------------------------------------------------------------------</p>
 ```{r, include=TRUE, echo=FALSE, results=TRUE}
 new_after_gr <- subset(new_df2, Date <= '2012-12-31'  & Date >= '2008-01-01')
 new_before_gr <- subset(new_df2, Date <= '2007-12-31'  & Date >= '2003-01-01')
@@ -573,6 +574,7 @@ t_test_GR = t.test(new_before_gr$Close,new_after_gr$Close)
 
 t_test_GR
 ```
+<p>------------------------------------------------------------------------------------------------------------</p>
 
 <p>**Observation: **
 
@@ -585,7 +587,7 @@ t_test_GR
 ## SMART QUESTION 2   : How is the S&P500 Index affected by the COVID-19 pandemic?
 <span style=" text-align: justify;">
 
-<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Covid19 Pandemic, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after Covid19 Pandemic , we can gain insights into how the index was impacted by this economic downturn.)
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Covid19 Pandemic, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after Covid19 Pandemic , we can gain insights into how the index was impacted by this pandemic.)
 <P>
 
 <p><b>Null Hypothesis</b> : There is no significant difference between the S&P 500 Index before and after the Covid-19.</p>
@@ -613,6 +615,16 @@ t_test_covid
 
 ## SMART QUESTION 3   : How is the S&P500 Index affected by the Russia-Ukraine Invasion?
 
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Russia-Ukraine Invasion, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing and comparing the S&P500 Index's performance before and after Russia-Ukraine Invasion, we can gain insights into how the index was impacted by this war.)
+<P>
+
+<p><b>Null Hypothesis</b> : There is no significant difference between the S&P 500 Index before and after the Russia-Ukraine Invasion</p>
+
+<p><b>Alternate Hypothesis</b> : There is a significant difference between the S&P 500 Index before and after the Russia-Ukraine Invasion.</p>
+
+
+<p>------------------------------------------------------------------------------------------------------------</p>
+<p><b>Welch Two Sample t-test</b></p>
 ```{r, include=TRUE, results=T}
 new_before_RUW <- subset(new_df2,Date <= '2022-02-23'  & Date >= '2020-01-01' )
 new_after_RUW <- subset(new_df2,Date <= '2023-12-31'  & Date >= '2022-02-24' )
@@ -620,9 +632,10 @@ new_after_RUW <- subset(new_df2,Date <= '2023-12-31'  & Date >= '2022-02-24' )
 t_test_RUW = t.test(new_before_RUW$Close ,new_after_RUW$Close)
 t_test_RUW
 ```
+<p>------------------------------------------------------------------------------------------------------------</p>
 <span style="  text-align: justify;">
 
-<p> Given these findings, as the p-value substantially falls below the significance level of 0.05, we reject the null hypothesis. Consequently, we deduce a significant disparity between the means. However, the obtained outcome contradicts expectations. Despite the commencement of the invasion, the market rebounded within a year, resulting in a mean after the invasion greater than the mean before.
+<p>**Observation: **Given these findings, as the p-value substantially falls below the significance level of 0.05, we reject the null hypothesis. Consequently, we deduce a significant disparity between the means. However, the obtained outcome contradicts expectations. Despite the commencement of the invasion, the market rebounded within a year, resulting in a mean after the invasion greater than the mean before.
 
 
 ## Conclusion
