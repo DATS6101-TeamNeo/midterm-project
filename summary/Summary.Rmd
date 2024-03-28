@@ -111,10 +111,7 @@ The S&P 500 is a stock market index that measures the performance of 500 large-c
 
 ### Step : 1 : Dropping unwanted variables and extracting numerical variables.
 ```{r, include=T, results=T}
-df <- data.frame(read.csv('../dataset2003-2023.csv'))
-df$Date <- as.Date(df$Date)
 str(df)
-new_df <- subset(df, select = -c(6))
 str(new_df)
 summary(new_df)
 num_variables <- subset(new_df,select = -c(1))
@@ -130,8 +127,6 @@ head(num_variables)
 
 
 ```{r, include=T, results=T}
-new_df$daily_change <- (new_df$Close / lag(new_df$Close) - 1) * 100
-
 head(new_df)
 ```
 
@@ -143,7 +138,6 @@ head(new_df)
 ### Step : 3 : Creating correlation heatmap for all the numeric variables.
 
 ```{r, include=T, results=T}
-library(corrplot)
 corr_matrix <- cor(num_variables)
 corrplot(corr_matrix)
 corr_matrix
@@ -156,7 +150,6 @@ corr_matrix
 ### Step : 4 : QQ plot for daily change.
 
 ```{r, include=T, results=T}
-new_df2 <- na.omit(new_df)
 
 qqnorm(new_df2$daily_change, main = "Q-Q Plot of Daily Returns")
 qqline(new_df2$daily_change, col = "red") # Add reference line
@@ -275,16 +268,6 @@ Now, we will create a line plot of the S&P 500 index closing prices with shaded 
 #### During Great Recession
 
 ```{r, include=TRUE, results='asis'}
-pre_recession <- new_df2 %>%
-  filter(Date >= as.Date("2003-01-01") & Date <= (great_recession_start - days(1)))
-
-during_recession <- new_df2 %>%
-  filter(Date >= great_recession_start & Date <= great_recession_end)
-
-post_recession <- new_df2 %>%
-  filter(Date >= (great_recession_end + days(1)) & Date <= as.Date("2019-12-31"))
-
-
 # Define event periods
 before_gr <- pre_recession
 
@@ -575,7 +558,7 @@ Now we calculate and compare the standard deviation of daily returns for each ev
 
 ## SMART QUESTION : 1 How is the S&P500 Index affected by the Great Recession?
 
-<P>**Explination:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing the S&P500 Index's performance during the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
+<P>**Explanation:** This question aims to explore the relationship between the S&P500 Index and the Great Recession, a significant economic event. We found that this event had a significant affect on S&P 500 index, so we formulated this question to further investigate this relationship further. (By analyzing the S&P500 Index's performance during the Great Recession, we can gain insights into how the index was impacted by this economic downturn.)
 <P>
 
 
@@ -655,4 +638,14 @@ t_test_RUW
 ## Conclusion
 <span style="font-size: 20px;  text-align: justify;">
 
-<p> The analysis reveals a decline in the S&P 500 price index following the Great Recession, with subsequent recovery over time. The t-test indicates a significant difference between the mean values before and after the recession. Specifically, the mean value before exceeds that after.Contrastingly, for the period before and after COVID-19, the mean close price is lower before compared to after. Likewise, in the context of the Russia-Ukraine war, the mean value before is lower compared to that after.
+<p> In this project, we embarked on an exciting journey to uncover the impact of major global events on the S&P 500 stock market index. 
+Our analysis focused on three significant occurrences: the Great Recession, the COVID-19 pandemic, and the Russia-Ukraine war. 
+By examining the data and applying statistical techniques, we gained valuable insights into how these events influenced the stock market's performance.
+
+The Great Recession left a notable mark on the S&P 500 index, causing a substantial decline in value. However, the market demonstrated its resilience, and the index gradually recovered over time. The t-test revealed that the mean value before the recession significantly surpassed the mean value after the recession, highlighting the magnitude of the recession's impact.
+
+ - Interestingly, the COVID-19 pandemic and the Russia-Ukraine war exhibited different trends. 
+ - The average closing price of the S&P 500 index was lower before the pandemic compared to after, suggesting that the market performed better in the aftermath despite the challenges. 
+ - Similarly, the mean value of the index was lower before the Russia-Ukraine war compared to the period after the war began, underscoring the complex dynamics at play during geopolitical events.
+
+In conclusion, this project has been a thrilling adventure into the realm of stock market dynamics. By examining the impact of major events on the S&P 500 index, we have gained a deeper understanding of how the market responds to adversity and opportunity. As we continue to explore and innovate, we can look forward to a future where our insights drive smarter investment decisions and contribute to a more stable and prosperous financial landscape. The journey has just begun, and the best is yet to come!
